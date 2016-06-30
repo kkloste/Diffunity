@@ -77,12 +77,12 @@ void sweepcut(sparserow* G, std::vector<mwIndex>& noderank, mwIndex& bindex,
 
 	for ( mwIndex counter = 0, curindex = 0; counter < length_array; counter++, curindex++ ){
 		mwIndex curinterior = 0;
-		curnode = noderank[curindex];
+		mwIndex curnode = noderank[curindex];
 		// move next neighbor into the local cut graph
 		// and update current volume and current cut-edges
 		for (mwIndex nzi = G->ai[curnode]; nzi < G->ai[curnode+1]; nzi++){
 			mwIndex curneighb = G->aj[nzi];
-			if (local_cut_G.map[curneigb] == 1){
+			if (local_cut_G.map[curneighb] == 1){
 				curinterior += 1;
 			}
 			local_cut_G.map[curneighb] = 1;
@@ -165,7 +165,7 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
     mxArray* volumeMX = mxCreateDoubleMatrix(1,1,mxREAL);
     mxArray* break_indexMX = mxCreateDoubleMatrix(1,1,mxREAL);
 	double conductance, cut, volume;
-	mwIndex break_index = 0;
+	mwIndex break_index;
     if (nlhs > 0) { plhs[0] = break_indexMX; }
     if (nlhs > 1) { plhs[1] = conductanceMX; }
     if (nlhs > 2) { plhs[2] = cutMX; }
@@ -179,8 +179,12 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
     
     DEBUGPRINT(("sweepcut_mex: call to sweepcut() done\n"));
     
-	*break_indexMX = (double)break_index + 1.0; // shifting to match Matlab indexing
-	*conductanceMX = conductance;
+	double* dummy = NULL;
+	dummy = mxGetPr( conductanceMX ); *dummy = conductance;
+	dummy = mxGetPr( break_indexMX ); *dummy = (double) break_index + 1.0 ; // shifting to matlab indexing
+	dummy = mxGetPr( cutMX ); *dummy = cut;
+	dummy = mxGetPr( volumeMX ); *dummy = conductance;
+
 	*cutMX = cut;
 	*volumeMX = volume;
 }

@@ -165,7 +165,7 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
     mxArray* volumeMX = mxCreateDoubleMatrix(1,1,mxREAL);
     mxArray* break_indexMX = mxCreateDoubleMatrix(1,1,mxREAL);
 	double conductance, cut, volume;
-	mwIndex break_index = 0;
+	mwIndex break_index;
     if (nlhs > 0) { plhs[0] = break_indexMX; }
     if (nlhs > 1) { plhs[1] = conductanceMX; }
     if (nlhs > 2) { plhs[2] = cutMX; }
@@ -179,8 +179,9 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
     
     DEBUGPRINT(("sweepcut_mex: call to sweepcut() done\n"));
     
-	*break_indexMX = (double)break_index + 1.0; // shifting to match Matlab indexing
-	*conductanceMX = conductance;
-	*cutMX = cut;
-	*volumeMX = volume;
+	double* dummy = NULL;
+	dummy = mxGetPr( conductanceMX ); *dummy = conductance;
+	dummy = mxGetPr( break_indexMX ); *dummy = (double) break_index + 1.0 ; // shifting to matlab indexing
+	dummy = mxGetPr( cutMX ); *dummy = cut;
+	dummy = mxGetPr( volumeMX ); *dummy = conductance;
 }
