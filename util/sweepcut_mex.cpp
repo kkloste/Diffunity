@@ -117,7 +117,7 @@ void copy_array_to_index_vector(const mxArray* v, std::vector<mwIndex>& vec)
 
 
 // USAGE
-// [bestset,cond,cut,vol,y,npushes] = sweepcut_mex(A,seed_set,coeffs,eps,debugflag)
+// [bindex,bcond,bcut,bvol] = sweepcut_mex(A,noderank,debugflag)
 void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 {
     // arguments/outputs error-checking
