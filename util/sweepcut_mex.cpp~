@@ -32,7 +32,7 @@
 
 
 
-#include <mex.h>
+#include "mex.h"
 
 #define DEBUGPRINT(x) do { if (debugflag) { \
 mexPrintf x; mexEvalString("drawnow"); } \
@@ -96,7 +96,7 @@ void sweepcut(sparserow* G, std::vector<mwIndex>& noderank, mwIndex& bindex,
 			bvol = curvol;
 			bindex = curindex;
 		}
-		if ( curvol >= tot_volume/2.0 ){ break; }
+		if ( curvol >= total_volume/2.0 ){ break; }
 	}
 }
 

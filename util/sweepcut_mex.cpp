@@ -32,7 +32,7 @@
 
 
 
-#include <mex.h>
+#include "mex.h"
 
 #define DEBUGPRINT(x) do { if (debugflag) { \
 mexPrintf x; mexEvalString("drawnow"); } \
@@ -77,12 +77,12 @@ void sweepcut(sparserow* G, std::vector<mwIndex>& noderank, mwIndex& bindex,
 
 	for ( mwIndex counter = 0, curindex = 0; counter < length_array; counter++, curindex++ ){
 		mwIndex curinterior = 0;
-		curnode = noderank[curindex];
+		mwIndex curnode = noderank[curindex];
 		// move next neighbor into the local cut graph
 		// and update current volume and current cut-edges
 		for (mwIndex nzi = G->ai[curnode]; nzi < G->ai[curnode+1]; nzi++){
 			mwIndex curneighb = G->aj[nzi];
-			if (local_cut_G.map[curneigb] == 1){
+			if (local_cut_G.map[curneighb] == 1){
 				curinterior += 1;
 			}
 			local_cut_G.map[curneighb] = 1;
