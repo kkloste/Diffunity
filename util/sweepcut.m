@@ -13,6 +13,6 @@ if nargin < 3, debugflag = 0; end
 [bestindex,bestcond,bestcut,bestvol] = sweepcut_mex(A,noderank,debugflag);
 
 bestset = [];
-if bestindex >= 1, bestset = noderank[1:bestindex]; end
+if bestindex >= 1, bestset = noderank(1:bestindex); end
 
 
