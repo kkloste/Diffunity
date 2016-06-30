@@ -7,6 +7,7 @@ function [bestset,bestcond,bestcut,bestvol] = sweepcut(A,vector,debugflag)
 if nargin < 3, debugflag = 0; end
 
 [ ~, noderank ] = sort( vector, 'descend' );
+noderank = noderank( find(noderank) );
 
 % TO DO: offer variable argument to allow degree normalizing
 
