@@ -183,5 +183,5 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 	dummy = mxGetPr( conductanceMX ); *dummy = conductance;
 	dummy = mxGetPr( break_indexMX ); *dummy = (double) break_index + 1.0 ; // shifting to matlab indexing
 	dummy = mxGetPr( cutMX ); *dummy = cut;
-	dummy = mxGetPr( volumeMX ); *dummy = conductance;
+	dummy = mxGetPr( volumeMX ); *dummy = volume;
 }
