@@ -96,7 +96,7 @@ void sweepcut(sparserow* G, std::vector<mwIndex>& noderank, mwIndex& bindex,
 			bvol = curvol;
 			bindex = curindex;
 		}
-		if ( curvol >= total_volume/2.0 ){ break; }
+		// if ( curvol >= total_volume/2.0 ){ break; }
 	}
 }
 

@@ -24,6 +24,7 @@ else
 	noderank = noderank( find(vals) );
 end
 
+disp( size(noderank) )
 
 % TO DO: offer variable argument to allow degree normalizing
 

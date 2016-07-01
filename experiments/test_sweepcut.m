@@ -28,10 +28,10 @@ for vert = 1:n,
 %	assert( condu - cond3 == 0, sprintf( 'node = %d \t pprgrow - cut_cond = %f .', vert, condu-cond3 ));
 %	assert( cond1 - cond2 == 0, sprintf( 'node = %d \t sweepcut - cut_cond = %f .', vert, cond1-cond2 ));
 
-	if jsim == 0 , sprintf( 'node = %d \t jac sim = %f ', vert, jsim ) ; end
-	if condu - cond1 == 0, sprintf( 'node = %d \t pprgrow - sweepcut = %f .', vert, condu-cond1 ) ; end
-	if condu - cond3 == 0, sprintf( 'node = %d \t pprgrow - cut_cond = %f .', vert, condu-cond3 ); end
-	if cond1 - cond2 == 0, sprintf( 'node = %d \t sweepcut - cut_cond = %f .', vert, cond1-cond2 ); end
+%	if jsim ~= 0 , sprintf( 'node = %d \t jac sim = %f ', vert, jsim ) ; end
+%	if condu - cond1 ~= 0, sprintf( 'node = %d \t pprgrow - sweepcut = %f .', vert, condu-cond1 ) ; end
+%	if condu - cond3 ~= 0, sprintf( 'node = %d \t pprgrow - cut_cond = %f .', vert, condu-cond3 ); end
+	if cond1 - cond2 ~= 0, sprintf( 'node = %d \t sweepcut - cut_cond = %f .', vert, cond1-cond2 ); end
 
 
 end
