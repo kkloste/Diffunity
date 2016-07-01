@@ -33,5 +33,4 @@ for vert = 1:n,
 	if condu - cond3 ~= 0, sprintf( 'node = %d \t pprgrow - cut_cond = %f .', vert, condu-cond3 ); end
 	if cond1 - cond2 ~= 0, sprintf( 'node = %d \t sweepcut - cut_cond = %f .', vert, cond1-cond2 ); end
 
-	[vert length(noderank) nnz(prvec) length(bset)]
 end
