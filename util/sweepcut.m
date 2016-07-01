@@ -24,8 +24,6 @@ else
 	noderank = noderank( find(vals) );
 end
 
-disp( size(noderank) )
-
 % TO DO: offer variable argument to allow degree normalizing
 
 [bestindex,bestcond,bestcut,bestvol] = sweepcut_mex(A,noderank,debugflag);
