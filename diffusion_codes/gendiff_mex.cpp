@@ -100,7 +100,7 @@ int seeded_diffusion(sparserow * G, sparsevec& set, sparsevec& y, const double e
     mwIndex n = G->n;
     mwIndex N = (mwIndex)coeffs.size();
     double dummy = 1.0;
-    for (int j=0; j< coeffs.size(); j++){
+    for (mwIndex j=0; j< coeffs.size(); j++){
         dummy = dummy - coeffs[j];
         if (dummy <= eps/2.0){
             N = j-1;
@@ -112,7 +112,7 @@ int seeded_diffusion(sparserow * G, sparsevec& set, sparsevec& y, const double e
     // initialize the thresholds for pushing
     std::vector<double> psis(N,0.0);
     psis[0] = 1.0;
-    for ( int j=1; j< N; j++){
+    for ( mwIndex j=1; j< N; j++){
         psis[j] = psis[j-1] - coeffs[j-1];
         mxAssert(psis[j] >= 0, "coefficients not properly scaled; must be nonnegative and sum to  <= 1");
     }
@@ -120,7 +120,7 @@ int seeded_diffusion(sparserow * G, sparsevec& set, sparsevec& y, const double e
     // check eps and coeffs
     mxAssert(psis[N] <= eps/2, "coefficients input do not meet accuracy input");
     std::vector<double> pushcoeff(N,0.0);
-    for (int k = 0; k < N ; k++){
+    for (mwIndex k = 0; k < N ; k++){
         pushcoeff[k] = eps/(2*psis[k]*(double)N);
     }
     
