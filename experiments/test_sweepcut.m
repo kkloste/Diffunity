@@ -23,9 +23,9 @@ for vert = 1:n,
 
 	jsim = jaccard_similarity( bestset, bset );
 
-	assert( jsim == 0 , fprintf( 'node = %d \t setdiff size = %d  \n', vert, jsim ) );
-	assert( condu - cond1 == 0, fprintf( 'node = %d \t pprgrow - sweepcut = %f \n.', vert, condu-cond1 ) );
-	assert( condu - cond3 == 0, fprintf( 'node = %d \t pprgrow - cut_cond = %f \n.', vert, condu-cond3 ));
-	assert( cond1 - cond2 == 0, fprintf( 'node = %d \t sweepcut - cut_cond = %f \n.', vert, cond1-cond2 ));
+	assert( jsim == 0 , fprintf( 'node = %d \t jac sim = %f ', vert, jsim ) );
+	assert( condu - cond1 == 0, fprintf( 'node = %d \t pprgrow - sweepcut = %f .', vert, condu-cond1 ) );
+	assert( condu - cond3 == 0, fprintf( 'node = %d \t pprgrow - cut_cond = %f .', vert, condu-cond3 ));
+	assert( cond1 - cond2 == 0, fprintf( 'node = %d \t sweepcut - cut_cond = %f .', vert, cond1-cond2 ));
 
 end
