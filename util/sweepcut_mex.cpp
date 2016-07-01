@@ -90,7 +90,7 @@ void sweepcut(sparserow* G, std::vector<mwIndex>& noderank, mwIndex& bindex,
 		curvol += (double) G->sr_degree(curnode);
 		curcut += (double) ( G->sr_degree(curnode) - 2*curinterior );
 		curcond = get_cond( curcut, curvol, total_volume);
-DEBUGPRINT(("sweepcut_mex: cond %f , cut %d , vol %d , total_volume %f  ,  min vol %f  \n", curcond, curcut, curvol, total_volume,  std::min( vol, tot_vol - vol )  ));
+DEBUGPRINT(("sweepcut_mex: cond %f , cut %d , vol %d , total_volume %f  ,  min vol %f  \n", curcond, curcut, curvol, total_volume,  std::min( curvol, total_volume - curvol )  ));
 		if (curcond < bcond) {
 			bcond = curcond;
 			bcut = curcut;
