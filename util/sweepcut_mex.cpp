@@ -85,8 +85,8 @@ void sweepcut(sparserow* G, std::vector<mwIndex>& noderank, mwIndex& bindex,
 			if (local_cut_G.map[curneighb] == 1){
 				curinterior += 1;
 			}
-			local_cut_G.map[curneighb] = 1;
 		}
+		local_cut_G.map[curnode] = 1;
 		curvol += (double) G->sr_degree(curnode);
 		curcut += (double) ( G->sr_degree(curnode) - (double)2*curinterior );
 		curcond = get_cond( curcut, curvol, total_volume);
@@ -109,9 +109,16 @@ void copy_array_to_index_vector(const mxArray* v, std::vector<mwIndex>& vec)
     
     vec.resize(n);
     
+	sparsevec double_counter; // make sure we don't put any node in the array more than once.
+
     for (size_t i=0; i<n; ++i) {
         double elem = p[i];
         mxAssert(elem >= 1, "Only positive integer elements allowed");
+
+		if (double_counter.map[elem] == 1){
+			continue;
+		}
+		double_counter.map[elem] = 1;
         vec[i] = (mwIndex)elem - 1;
     }
 }
