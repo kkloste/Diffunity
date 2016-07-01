@@ -21,7 +21,7 @@ for vert = 1:n,
 	[cond2 cut2 vol2] = cut_cond(A,bset);
 	[cond3 cut3 vol3] = cut_cond(A,bestset);
 
-	jsim = jacccard_similarity( bestset, bset );
+	jsim = jaccard_similarity( bestset, bset );
 
 	assert( jsim == 0 , fprintf( 'node = %d \t setdiff size = %d  \n', vert, jsim ) );
 	assert( condu - cond1 == 0, fprintf( 'node = %d \t pprgrow - sweepcut = %f \n.', vert, condu-cond1 ) );
