@@ -17,7 +17,7 @@ disp( [n, nnz(A)] )
 for vert = 1:n,
 	[bestset,condu,cut,vol,prvec] = pprgrow_mex(A,vert, nnz(A)/6 ,0.85);
 	prvec = sparse( prvec(:,1), 1, prvec(:,2), n, 1);
-	[bset, cond1, cut1, vol1] = sweepcut(A,prvec);
+	[bset, cond1, cut1, vol1, noderank] = sweepcut(A,prvec);
 	[cond2 cut2 vol2] = cut_cond(A,bset);
 	[cond3 cut3 vol3] = cut_cond(A,bestset);
 
