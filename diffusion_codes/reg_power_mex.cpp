@@ -63,7 +63,7 @@ struct sparserow {
 	 * Returns the degree of node u in sparse graph s
 	 */
 	mwIndex sr_degree(mwIndex u) {
-	    return (s->ai[u+1] - s->ai[u]);
+	    return (ai[u+1] - ai[u]);
 	}
 
 };

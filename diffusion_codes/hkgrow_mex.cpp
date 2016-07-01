@@ -162,12 +162,12 @@ int gsqexpmseed(sparserow * G, sparsevec& set, sparsevec& y,
     //  into the vector "pushcoeff"
     std::vector<double> psivec(N+1,0.);
     psivec[N] = 1;
-    for (int k = 1; k <= N ; k++){
+    for (mwIndex k = 1; k <= N ; k++){
         psivec[N-k] = psivec[N-k+1]*t/(double)(N-k+1) + 1;
     } // psivec[k] = psi_k(t)
     std::vector<double> pushcoeff(N+1,0.);
     pushcoeff[0] = ((exp(t)*eps)/(double)N)/psivec[0]; // This is the correct version
-    for (int k = 1; k <= N ; k++){
+    for (mwIndex k = 1; k <= N ; k++){
         pushcoeff[k] = pushcoeff[k-1]*(psivec[k-1]/psivec[k]);
     } // pushcoeff[j] = exp(t)*eps/(N*psivec[j])
     
