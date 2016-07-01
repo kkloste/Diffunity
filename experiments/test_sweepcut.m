@@ -1,4 +1,7 @@
-% Testing sweepcut
+% Testing sweepcut_mex
+% by comparing the output of sweepcut_mex to the output of pprgrow_mex.
+% Check that both codes identify the same set of nodes as the best cut,
+% and that the two codes agree on conductance, cut, and volume.
 
 load ../data/netscience-cc.mat;
 
@@ -12,8 +15,6 @@ addpath ../util;
 n = size(A,1);
 degrees = full(sum(A,2));
 
-disp( [n, nnz(A)] )
-
 for vert = 1:n,
 	[bestset,condu,cut,vol,prvec] = pprgrow_mex(A,vert, nnz(A)/6 ,0.85);
 	prvec = sparse( prvec(:,1), 1, prvec(:,2), n, 1);
@@ -23,14 +24,11 @@ for vert = 1:n,
 
 	jsim = jaccard_similarity( bestset, bset );
 
-%	assert( jsim == 0 , sprintf( 'node = %d \t jac sim = %f ', vert, jsim ) );
-%	assert( condu - cond1 == 0, sprintf( 'node = %d \t pprgrow - sweepcut = %f .', vert, condu-cond1 ) );
-%	assert( condu - cond3 == 0, sprintf( 'node = %d \t pprgrow - cut_cond = %f .', vert, condu-cond3 ));
-%	assert( cond1 - cond2 == 0, sprintf( 'node = %d \t sweepcut - cut_cond = %f .', vert, cond1-cond2 ));
-
-	if jsim ~= 1 , sprintf( 'node = %d \t jac sim = %f ', vert, jsim ) ; end
-	if condu - cond1 ~= 0, sprintf( 'node = %d \t pprgrow - sweepcut = %f .', vert, condu-cond1 ) ; end
-	if condu - cond3 ~= 0, sprintf( 'node = %d \t pprgrow - cut_cond = %f .', vert, condu-cond3 ); end
-	if cond1 - cond2 ~= 0, sprintf( 'node = %d \t sweepcut - cut_cond = %f .', vert, cond1-cond2 ); end
+	if jsim ~= 1 , sprintf( 'error node = %d \t jac sim = %f ', vert, jsim ) ; end
+	if condu - cond1 ~= 0, sprintf( 'error node = %d \t pprgrow - sweepcut = %f .', vert, condu-cond1 ) ; end
+	if condu - cond3 ~= 0, sprintf( 'error node = %d \t pprgrow - cut_cond = %f .', vert, condu-cond3 ); end
+	if cond1 - cond2 ~= 0, sprintf( 'error node = %d \t sweepcut - cut_cond = %f .', vert, cond1-cond2 ); end
 
 end
+
+fprintf( '\n test_sweepcut done on netscience-cc -- everything worked, unless output above said otherwise. \n.' );

@@ -50,7 +50,7 @@ struct sparserow {
      * Returns the degree of node u in sparse graph s
      */
     mwIndex sr_degree( mwIndex u) {
-        return (ai[u+1] - ai[u]);
+        return (aj[u+1] - aj[u]);
     }
 };
 
@@ -70,7 +70,7 @@ void sweepcut(sparserow* G, std::vector<mwIndex>& noderank, mwIndex& bindex,
 	double& bcond, double& bvol, double& bcut)
 {
 	mwIndex length_array = noderank.size();
-	double total_volume = (double)G->ai[G->m] ;
+	double total_volume = (double)G->aj[G->n] ;
     sparsevec local_cut_G;
 	double  curcond = 0.0, curvol = 0.0, curcut = 0.0;
 	bcond = 2.0;
@@ -80,23 +80,24 @@ void sweepcut(sparserow* G, std::vector<mwIndex>& noderank, mwIndex& bindex,
 		mwIndex curnode = noderank[curindex];
 		// move next neighbor into the local cut graph
 		// and update current volume and current cut-edges
-		for (mwIndex nzi = G->ai[curnode]; nzi < G->ai[curnode+1]; nzi++){
-			mwIndex curneighb = G->aj[nzi];
+		for (mwIndex nzi = G->aj[curnode]; nzi < G->aj[curnode+1]; nzi++){
+			mwIndex curneighb = G->ai[nzi];
 			if (local_cut_G.map[curneighb] == 1){
 				curinterior += 1;
 			}
-			local_cut_G.map[curneighb] = 1;
 		}
+		local_cut_G.map[curnode] = 1;
 		curvol += (double) G->sr_degree(curnode);
-		curcut += (double) ( G->sr_degree(curnode) - 2*curinterior );
+		curcut += (double) ( G->sr_degree(curnode) - (double)2*curinterior );
 		curcond = get_cond( curcut, curvol, total_volume);
+DEBUGPRINT(("sweepcut_mex: cond %f , cut %f , vol %f , total_volume %f  ,  curinterior %d , degree %d  \n", curcond, curcut, curvol, total_volume, curinterior, G->sr_degree(curnode) ));
 		if (curcond < bcond) {
 			bcond = curcond;
 			bcut = curcut;
 			bvol = curvol;
 			bindex = curindex;
 		}
-		if ( curvol >= total_volume/2.0 ){ break; }
+		// if ( curvol >= total_volume/2.0 ){ break; }
 	}
 }
 
@@ -108,16 +109,23 @@ void copy_array_to_index_vector(const mxArray* v, std::vector<mwIndex>& vec)
     
     vec.resize(n);
     
+	sparsevec double_counter; // make sure we don't put any node in the array more than once.
+
     for (size_t i=0; i<n; ++i) {
         double elem = p[i];
         mxAssert(elem >= 1, "Only positive integer elements allowed");
+
+		if (double_counter.map[elem] == 1){
+			continue;
+		}
+		double_counter.map[elem] = 1;
         vec[i] = (mwIndex)elem - 1;
     }
 }
 
 
 // USAGE
-// [bestset,cond,cut,vol,y,npushes] = sweepcut_mex(A,seed_set,coeffs,eps,debugflag)
+// [bindex,bcond,bcut,bvol] = sweepcut_mex(A,noderank,debugflag)
 void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 {
     // arguments/outputs error-checking
@@ -147,10 +155,12 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
     sparserow r;
     r.m = mxGetM(mat);
     r.n = mxGetN(mat);
-    r.ai = mxGetJc(mat);
-    r.aj = mxGetIr(mat);
+    r.aj = mxGetJc(mat);
+    r.ai = mxGetIr(mat);
     r.a = mxGetPr(mat);
-    
+
+	    
+
     // Retrieve ordered node array
     const mxArray* set = prhs[1];
     std::vector< mwIndex > node_array;
@@ -183,8 +193,5 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 	dummy = mxGetPr( conductanceMX ); *dummy = conductance;
 	dummy = mxGetPr( break_indexMX ); *dummy = (double) break_index + 1.0 ; // shifting to matlab indexing
 	dummy = mxGetPr( cutMX ); *dummy = cut;
-	dummy = mxGetPr( volumeMX ); *dummy = conductance;
-
-	*cutMX = cut;
-	*volumeMX = volume;
+	dummy = mxGetPr( volumeMX ); *dummy = volume;
 }
