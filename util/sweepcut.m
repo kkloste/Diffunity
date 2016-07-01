@@ -6,6 +6,11 @@ function [bestset,bestcond,bestcut,bestvol] = sweepcut(A,vector,debugflag)
 
 if nargin < 3, debugflag = 0; end
 
+if issparse(vector) == true, 
+	[rows, cols, vals] = find(vector);
+	[~, perm] = sort( vals, 'descend');
+	noderank = rows(perm);
+end
 [ ~, noderank ] = sort( vector, 'descend' );
 noderank = noderank( find(noderank) );
 
