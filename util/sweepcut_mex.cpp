@@ -50,7 +50,7 @@ struct sparserow {
      * Returns the degree of node u in sparse graph s
      */
     mwIndex sr_degree( mwIndex u) {
-        return (ai[u+1] - ai[u]);
+        return (aj[u+1] - aj[u]);
     }
 };
 
@@ -70,7 +70,7 @@ void sweepcut(sparserow* G, std::vector<mwIndex>& noderank, mwIndex& bindex,
 	double& bcond, double& bvol, double& bcut)
 {
 	mwIndex length_array = noderank.size();
-	double total_volume = (double)G->ai[G->m] ;
+	double total_volume = (double)G->aj[G->n] ;
     sparsevec local_cut_G;
 	double  curcond = 0.0, curvol = 0.0, curcut = 0.0;
 	bcond = 2.0;
@@ -80,8 +80,8 @@ void sweepcut(sparserow* G, std::vector<mwIndex>& noderank, mwIndex& bindex,
 		mwIndex curnode = noderank[curindex];
 		// move next neighbor into the local cut graph
 		// and update current volume and current cut-edges
-		for (mwIndex nzi = G->ai[curnode]; nzi < G->ai[curnode+1]; nzi++){
-			mwIndex curneighb = G->aj[nzi];
+		for (mwIndex nzi = G->aj[curnode]; nzi < G->aj[curnode+1]; nzi++){
+			mwIndex curneighb = G->ai[nzi];
 			if (local_cut_G.map[curneighb] == 1){
 				curinterior += 1;
 			}
@@ -90,7 +90,7 @@ void sweepcut(sparserow* G, std::vector<mwIndex>& noderank, mwIndex& bindex,
 		curvol += (double) G->sr_degree(curnode);
 		curcut += (double) ( G->sr_degree(curnode) - 2*curinterior );
 		curcond = get_cond( curcut, curvol, total_volume);
-DEBUGPRINT(("sweepcut_mex: cond %f , cut %d , vol %d , total_volume %f  ,  min vol %f  \n", curcond, curcut, curvol, total_volume,  std::min( curvol, total_volume - curvol )  ));
+DEBUGPRINT(("sweepcut_mex: cond %f , cut %f , vol %f , total_volume %f  ,  min vol %f  \n", curcond, curcut, curvol, total_volume,  std::min( curvol, total_volume - curvol )  ));
 		if (curcond < bcond) {
 			bcond = curcond;
 			bcut = curcut;
@@ -148,10 +148,12 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
     sparserow r;
     r.m = mxGetM(mat);
     r.n = mxGetN(mat);
-    r.ai = mxGetJc(mat);
-    r.aj = mxGetIr(mat);
+    r.aj = mxGetJc(mat);
+    r.ai = mxGetIr(mat);
     r.a = mxGetPr(mat);
-    
+
+	    
+
     // Retrieve ordered node array
     const mxArray* set = prhs[1];
     std::vector< mwIndex > node_array;
