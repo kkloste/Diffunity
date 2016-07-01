@@ -4,7 +4,7 @@ load ../data/netscience-cc.mat;
 
 A = spones(A);
 assert( norm(A-A',1) == 0 , 'Not symmetric\n.');
-A = A - diag(A);
+A = A - diag(diag(A));
 
 addpath ../diffusion_codes;
 addpath ../util;
