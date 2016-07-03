@@ -22,12 +22,15 @@ for which_seed = 1:NUM_SEEDS,
 	plot( walk_set.bound(:, which_seed) );
 	plot( walk_set.supp_vol(:, which_seed) ./ walk_set.total_volume );
 	plot( walk_set.vols(:, which_seed) ./ walk_set.total_volume );
+	plot( walk_set.minf(:, which_seed) );
 	ylim([0,1]);
 
+	ind = find( walk_set.vols(:,which_seed) >= walk_set.total_volume/2, 1 );
+	plot( [0,1], [ind,ind] );
 
 	title( sprintf( '%s, seed %d', fname, num2str(which_seed) ) );
 	xlabel('Walk term');
-	legend('conductance', 'our bound', 'supp vol', 'location','Northeast');
+	legend('conductance', 'our bound', 'supp vol', 'vols', 'minf', 'location','Northeast');
 	print(gcf,[ image_dir, 'cond-v-bound-', fname, '-', num2str(which_seed), '.png'],'-dpng');
 
 	fprintf('Done plotting %s  seed %d / %d\n', fname, which_seed, NUM_SEEDS );
@@ -43,7 +46,10 @@ for which_seed = 1:NUM_SEEDS,
 	plot( walk_set.bound(range, which_seed) );
 	plot( log10(walk_set.distance1(range, which_seed) ) );
 	plot( log10(walk_set.distanceInf(range, which_seed) ) );
-%	ylim([0,1]);
+
+yl = ylim;
+	ind = find( walk_set.vols(:,which_seed) >= walk_set.total_volume/2, 1 );
+	plot( yl, [ind,ind] );
 
 
 	title( sprintf( '%s, seed %d', fname, num2str(which_seed) ) );

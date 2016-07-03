@@ -21,7 +21,7 @@ L = D - A;
 nL = Dinv*(L*Dinv);
 stdist = ones(n,1)./n;
 
-MAX_TERMS = n;
+MAX_TERMS = 60;
 NUM_SEEDS = 10;
 
 walk_set = struct;
@@ -64,7 +64,7 @@ for which_seed = 1:NUM_SEEDS,
 		walk_set.supp_vol(k,which_seed) = full(sum( d(supp) ) );
 		walk_set.distanceInf(k,which_seed) = norm( Dinv*(s - stdist), 'inf' );
 		walk_set.distance1(k,which_seed) = norm( Dinv*(s - stdist), 1 );
-		walk_set.minf(k,which_seed) = min(Dinv*s);
+		walk_set.minf(k,which_seed) = min(dinvs);
 	end
 	fprintf('Done with %s  seed %d / %d\n', fname, which_seed, NUM_SEEDS );
 end
