@@ -59,6 +59,6 @@ for which_seed = 1:NUM_SEEDS,
 		walk_set.minf(k,which_seed) = min(Dinv*s);
 	end
 end
-save( [ save_dir, 'optimal_walk_', fname, .mat'], 'walk_set' );
+save( [ save_dir, 'optimal_walk_', fname, '.mat'], 'walk_set' );
 
 
