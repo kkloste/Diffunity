@@ -48,12 +48,19 @@ for which_seed = 1:NUM_SEEDS,
 		s = P*s;
 		supp = find(s);
 
+		dinvs = Dinv*s;
+
 		[bestset,bestcond,bestcut,bestvol,noderank] = sweepcut(A,s);
 		walk_set.conds(k,which_seed) = bestcond;
 		walk_set.vols(k,which_seed) = bestvol;
 		walk_set.sizes(k,which_seed) = nnz(bestset);
-		walk_set.rayleigh(k,which_seed) =  s'*(nL*s) / ( s'* (Dinv*s) ) ;
-		walk_set.bound(k,which_seed) =  sqrt( 2*s'*(nL*s) / ( s'* (Dinv*s) ) ) ;
+		walk_set.rayleigh(k,which_seed) =  s'*(nL*s) / ( s'* (dinvs) ) ;
+		
+		c = full(min(dinvs))^2*walk_set.total_volume;
+		b = c/( dinvs'*s );
+		a = (1 - b);
+
+		walk_set.bound(k,which_seed) =  sqrt( (2*s'*(nL*s) / ( s'* (dinvs) ))/a  ) ;
 		walk_set.supp_vol(k,which_seed) = full(sum( d(supp) ) );
 		walk_set.distanceInf(k,which_seed) = norm( Dinv*(s - stdist), 'inf' );
 		walk_set.distance1(k,which_seed) = norm( Dinv*(s - stdist), 1 );

@@ -21,6 +21,7 @@ for which_seed = 1:NUM_SEEDS,
 	hold all;
 	plot( walk_set.bound(:, which_seed) );
 	plot( walk_set.supp_vol(:, which_seed) ./ walk_set.total_volume );
+	plot( walk_set.vols(:, which_seed) ./ walk_set.total_volume );
 	ylim([0,1]);
 
 
