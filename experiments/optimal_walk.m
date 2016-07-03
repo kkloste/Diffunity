@@ -37,6 +37,7 @@ walk_set.supp_vol = zeros(MAX_TERMS, NUM_SEEDS);
 walk_set.distance1 = zeros(MAX_TERMS, NUM_SEEDS);
 walk_set.distanceInf = zeros(MAX_TERMS, NUM_SEEDS);
 walk_set.minf = zeros(MAX_TERMS, NUM_SEEDS);
+walk_set.total_volume = nnz(A);
 
 for which_seed = 1:NUM_SEEDS,
 	seed = walk_set.seeds(which_seed);
