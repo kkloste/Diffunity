@@ -16,7 +16,7 @@ addpath ../util;
 % MAX_TERMS = n;
 % walk_set:  seed, conds, vols, sizes, rayleigh, bound
 %		supp_vol, distance1, distanceInf, minf
-which_seed = 1:length(walk_set.seeds),
+for which_seed = 1:length(walk_set.seeds),
 	plot( walk_set.conds(:, which_seed) );
 	hold on;
 	plot( walk_set.bound(:, which_seed) );
