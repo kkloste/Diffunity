@@ -26,6 +26,7 @@ for which_seed = 1:NUM_SEEDS,
 	ylim([0,1]);
 
 	ind = find( walk_set.vols(:,which_seed) >= walk_set.total_volume/2, 1 );
+	if numel(ind) ==0, ind = length(walk_set.vols); end
 	plot( [0,1], [ind,ind] );
 
 	title( sprintf( '%s, seed %d', fname, num2str(which_seed) ) );
@@ -49,6 +50,7 @@ for which_seed = 1:NUM_SEEDS,
 
 yl = ylim;
 	ind = find( walk_set.vols(:,which_seed) >= walk_set.total_volume/2, 1 );
+	if numel(ind) ==0, ind = max(range); end
 	plot( yl, [ind,ind] );
 
 
