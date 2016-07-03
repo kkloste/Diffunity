@@ -14,7 +14,8 @@ addpath ../util;
 % MAX_TERMS = n;
 % walk_set:  seed, conds, vols, sizes, rayleigh, bound
 %		supp_vol, distance1, distanceInf, minf
-for which_seed = 1:length(walk_set.seeds),
+NUM_SEEDS = length(walk_set.seeds);
+for which_seed = 1:NUM_SEEDS,
 	clf;
 	plot( walk_set.conds(:, which_seed) );
 	hold all;
@@ -27,4 +28,27 @@ for which_seed = 1:length(walk_set.seeds),
 	xlabel('Walk term');
 	legend('conductance', 'our bound', 'supp vol', 'location','Northeast');
 	print(gcf,[ image_dir, 'cond-v-bound-', fname, '-', num2str(which_seed), '.png'],'-dpng');
+
+	fprintf('Done plotting %s  seed %d / %d\n', fname, which_seed, NUM_SEEDS );
+end
+
+%% PLOT DISTANCE
+
+range = 1:50;
+for which_seed = 1:NUM_SEEDS,
+	clf;
+	plot( walk_set.conds(range, which_seed) );
+	hold all;
+	plot( walk_set.bound(range, which_seed) );
+	plot( log10(walk_set.distance1(range, which_seed) ) );
+	plot( log10(walk_set.distanceInf(range, which_seed) ) );
+%	ylim([0,1]);
+
+
+	title( sprintf( '%s, seed %d', fname, num2str(which_seed) ) );
+	xlabel('Walk term');
+	legend('conductance', 'our bound', 'dist1', 'dist_inf', 'location','Northeast');
+	print(gcf,[ image_dir, 'cond-v-dist-', fname, '-', num2str(which_seed), '.png'],'-dpng');
+
+	fprintf('Done plotting %s  seed %d / %d\n', fname, which_seed, NUM_SEEDS );
 end

@@ -59,6 +59,7 @@ for which_seed = 1:NUM_SEEDS,
 		walk_set.distance1(k,which_seed) = norm( Dinv*(s - stdist), 1 );
 		walk_set.minf(k,which_seed) = min(Dinv*s);
 	end
+	fprintf('Done with %s  seed %d / %d\n', fname, which_seed, NUM_SEEDS );
 end
 save( [ save_dir, 'optimal_walk_', fname, '.mat'], 'walk_set' );
 
