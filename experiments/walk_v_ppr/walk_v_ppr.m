@@ -1,15 +1,23 @@
+function walk_v_ppr( varargin )
 % Sweep over walk vectors of different lengths and compare conductance
 % to rayleigh quotient -- then compare the performance vs the conductance
 % obtained for personalized PageRank approximations using the same number
 % of terms.
 %
 
-clear; clc;
+p = inputParser;
+p.addOptional('fname','netscience-cc');
+p.addOptional('alpha',0.9,@isnumeric);
+p.parse(varargin{:});
+
+alpha = p.Results.alpha;
+
+clc;
 addpath ../../util;
 addpath ../../diffusion_codes;
 
 save_dir = './results/';
-fname = 'netscience-cc';
+fname = p.Results.fname
 load(['../../data/', fname, '.mat']);
 
 A = A|A';
