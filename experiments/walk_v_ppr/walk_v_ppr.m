@@ -62,13 +62,13 @@ for which_seed = 1:NUM_SEEDS,
 	s = sparse( seed, 1, 1, n, 1 );
 	[bestset,bestcond,bestcut,bestvol,noderank] = sweepcut(A,s);
 
-	ppr = s;
+	temp_ppr = s;
 	sa = s;
 
 	for k=1:MAX_TERMS,
 		s = P*s;
 		sa = (P*sa).*alpha;
-		ppr = ppr + sa;
+		temp_ppr = temp_ppr + sa;
 
 		supp = find(s);
 		dinvs = Dinv*s;
@@ -90,6 +90,7 @@ for which_seed = 1:NUM_SEEDS,
 		walk_set.minf(k,which_seed) = min(dinvs);
 
 		% now do PPR
+		ppr = temp_ppr./sum(temp_ppr);
 		supp = find(ppr);
 		dinvppr = Dinv*ppr;
 
