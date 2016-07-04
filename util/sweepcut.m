@@ -1,32 +1,52 @@
-function [bestset,bestcond,bestcut,bestvol,noderank] = sweepcut(A,vector,debugflag)
+function [bestset,bestcond,bestcut,bestvol,noderank] = sweepcut(A,vector,varargin)
 % [bestset,bestcond,bestcut,bestvol,noderank] = sweepcut(A,vector,debugflag)
 %
-%	A       -- symmetric, unweighted adjacency matrix
-%   vector  -- vector of node scores to perform sweep on. Need not be length n.
-%               If vector is length k < n, then only those k nodes will be swept.
+%	INPUTS:
+%		A       	-- symmetric, unweighted adjacency matrix
+%		vector  	-- vector of node scores to perform sweep on. Need not be length n.
+%               	If vector is length k < n, then only those k nodes will be swept.
 %
-%   OUTPUTS
+%	OPTIONAL INPUTS:
+%		varargin	-- 'debugflag':		set to true to have MEX code output errors messages.
+%					-- 'halfvol':		set to true to have MEX code stop sweep process once
+%						half the volume of the graph is reached.
+%					-- 'inputnodes':	set to true to have input "vector" be an
+%						ordering on the nodes instead of a vector of values to be sorted.
+%						This option does not have safety checks, so only use if you know
+%						exactly what you are doing.
+%
+%	OUTPUTS:
 %       bestset     -- set of nodes obtaining best conductance found during sweep.
-%       bestcond    -- conductance obtained. (bestcut, bestvol same).
+%       bestcond    -- conductance obtained (similarly for outputs bestcut, bestvol).
 %       noderank    -- the ordering of nodes used during the sweep procedure.
 %
 % Kyle Kloster
-% NCSU, 2016
+% NCSU, July 2016
 
-if nargin < 3, debugflag = 0; end
+p = inputParser;
+p.addOptional('debugflag',false,@islogical);
+p.addOptional('halfvol',false,@islogical);
+p.addOptional('inputnodes',false,@islogical);
+p.parse(varargin{:});
 
-if issparse(vector) == true, 
-	[rows, cols, vals] = find(vector);
-	[~, perm] = sort( vals, 'descend');
-	noderank = rows(perm);
-else
-	[ vals, noderank ] = sort( vector, 'descend' );
-	noderank = noderank( find(vals) );
+debugflag = p.Results.debugflag;
+halfvol = 0;
+if p.Results.halfvol, halfvol = 1; end
+
+if p.Results.inputnodes,
+	noderank = vector;
+else,
+	if issparse(vector) == true, 
+		[rows, cols, vals] = find(vector);
+		[~, perm] = sort( vals, 'descend');
+		noderank = rows(perm);
+	else
+		[ vals, noderank ] = sort( vector, 'descend' );
+		noderank = noderank( find(vals) );
+	end
 end
 
-% TO DO: offer variable argument to allow degree normalizing
-
-[bestindex,bestcond,bestcut,bestvol] = sweepcut_mex(A,noderank,debugflag);
+[bestindex,bestcond,bestcut,bestvol] = sweepcut_mex(A,noderank,halfvol,debugflag);
 
 bestset = [];
 if bestindex >= 1, bestset = noderank(1:bestindex); end

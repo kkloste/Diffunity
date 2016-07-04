@@ -3,12 +3,12 @@
 %
 
 clear; clc;
-addpath ../util;
-addpath ../diffusion_codes;
+addpath ../../util;
+addpath ../../diffusion_codes;
 
 save_dir = './results/';
 fname = 'netscience-cc';
-load(['../data/', fname, '.mat']);
+load(['../../data/', fname, '.mat']);
 
 A = A|A';
 A = A-diag(diag(A));

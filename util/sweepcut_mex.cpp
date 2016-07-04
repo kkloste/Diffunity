@@ -67,7 +67,7 @@ double get_cond( double cut, double vol, double tot_vol ){
  */
 
 void sweepcut(sparserow* G, std::vector<mwIndex>& noderank, mwIndex& bindex,
-	double& bcond, double& bvol, double& bcut)
+	double& bcond, double& bvol, double& bcut, int halfvol)
 {
 	mwIndex length_array = noderank.size();
 	double total_volume = (double)G->aj[G->n] ;
@@ -91,13 +91,13 @@ void sweepcut(sparserow* G, std::vector<mwIndex>& noderank, mwIndex& bindex,
 		curcut += (double) ( G->sr_degree(curnode) - (double)2*curinterior );
 		curcond = get_cond( curcut, curvol, total_volume);
 //DEBUGPRINT(("sweepcut_mex: cond %f , cut %f , vol %f , total_volume %f  ,  curinterior %d , degree %d  \n", curcond, curcut, curvol, total_volume, curinterior, G->sr_degree(curnode) ));
+		if ( (halfvol == 1) && (curvol >= total_volume/2.0) ){ break; }
 		if (curcond < bcond) {
 			bcond = curcond;
 			bcut = curcut;
 			bvol = curvol;
 			bindex = curindex;
 		}
-		// if ( curvol >= total_volume/2.0 ){ break; }
 	}
 }
 
@@ -125,16 +125,16 @@ void copy_array_to_index_vector(const mxArray* v, std::vector<mwIndex>& vec)
 
 
 // USAGE
-// [bindex,bcond,bcut,bvol] = sweepcut_mex(A,noderank,debugflag)
+// [bindex,bcond,bcut,bvol] = sweepcut_mex(A,noderank,halfvol,debugflag)
 void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 {
     // arguments/outputs error-checking
-    if ( nrhs > 3 || nrhs < 2 ) {
+    if ( nrhs > 4 || nrhs < 2 ) {
         mexErrMsgIdAndTxt("sweepcut_mex:wrongNumberArguments",
                           "sweepcut_mex needs two to three arguments, not %i", nrhs);
     }
-    if (nrhs == 3) {
-        debugflag = (int)mxGetScalar(prhs[2]);
+    if (nrhs == 4) {
+        debugflag = (int)mxGetScalar(prhs[3]);
     }
     DEBUGPRINT(("sweepcut_mex: preprocessing start: \n"));
     if ( nlhs > 4 ){
@@ -166,6 +166,12 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
     std::vector< mwIndex > node_array;
     copy_array_to_index_vector( set, node_array );
     
+	// Retrieve "half volume" flag
+	int halfvol = 0;
+	if (nrhs >= 3){
+        halfvol = (int) mxGetScalar(prhs[2]);
+	}
+
 // INPUTS DECODED
 // now perform sweep procedure
 
@@ -185,7 +191,7 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
     DEBUGPRINT(("sweepcut_mex: preprocessing end: \n"));
     
     // execute actual code
-    sweepcut(&r, node_array, break_index, conductance, volume, cut);
+    sweepcut(&r, node_array, break_index, conductance, volume, cut, halfvol);
     
     DEBUGPRINT(("sweepcut_mex: call to sweepcut() done\n"));
     

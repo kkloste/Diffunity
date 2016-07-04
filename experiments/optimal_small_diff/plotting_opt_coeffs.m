@@ -9,7 +9,7 @@ load_dir = './results/';
 image_dir = './images/';
 
 load( [load_dir, 'optimal_walk_', fname, '.mat'] );
-addpath ../util;
+addpath ../../util;
 
 % MAX_TERMS = n;
 % walk_set:  seed, conds, vols, sizes, rayleigh, bound
