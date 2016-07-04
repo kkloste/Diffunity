@@ -21,7 +21,7 @@ L = D - A;
 nL = Dinv*(L*Dinv);
 stdist = ones(n,1)./n;
 
-MAX_TERMS = 60;
+MAX_TERMS = 100;
 NUM_SEEDS = 10;
 
 walk_set = struct;
@@ -50,7 +50,7 @@ for which_seed = 1:NUM_SEEDS,
 
 		dinvs = Dinv*s;
 
-		[bestset,bestcond,bestcut,bestvol,noderank] = sweepcut(A,s);
+		[bestset,bestcond,bestcut,bestvol,noderank] = sweepcut(A,s,'halfvol',true);
 		walk_set.conds(k,which_seed) = bestcond;
 		walk_set.vols(k,which_seed) = bestvol;
 		walk_set.sizes(k,which_seed) = nnz(bestset);
