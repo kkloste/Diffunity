@@ -7,7 +7,6 @@ p = inputParser;
 p.addOptional('fname','netscience-cc');
 p.parse(varargin{:});
 
-clear; clc; 
 fname = p.Results.fname;
 
 load_dir = './results/';
