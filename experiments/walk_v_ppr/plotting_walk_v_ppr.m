@@ -26,6 +26,10 @@ for which_seed = 1:NUM_SEEDS,
 	hold all;
 	plot( ppr_set.bound(:, which_seed) );
 
+	plot( hk_set.conds(:, which_seed) );
+	hold all;
+	plot( hk_set.bound(:, which_seed) );
+
 
 	ylim([0,1]);
 

@@ -8,8 +8,10 @@ function walk_v_ppr( varargin )
 p = inputParser;
 p.addOptional('fname','netscience-cc');
 p.addOptional('alpha',0.9,@isnumeric);
+p.addOptional('hk_t',1,@isnumeric);
 p.parse(varargin{:});
 
+hk_t = p.Results.hk_t;
 alpha = p.Results.alpha;
 
 clc;
@@ -57,6 +59,14 @@ ppr_set.bound = zeros(MAX_TERMS, NUM_SEEDS);
 ppr_set.supp_vol = zeros(MAX_TERMS, NUM_SEEDS);
 ppr_set.minf = zeros(MAX_TERMS, NUM_SEEDS);
 
+hk_set = struct;
+hk_set.conds = zeros(MAX_TERMS, NUM_SEEDS);
+hk_set.vols = zeros(MAX_TERMS, NUM_SEEDS);
+hk_set.sizes = zeros(MAX_TERMS, NUM_SEEDS);
+hk_set.bound = zeros(MAX_TERMS, NUM_SEEDS);
+hk_set.supp_vol = zeros(MAX_TERMS, NUM_SEEDS);
+hk_set.minf = zeros(MAX_TERMS, NUM_SEEDS);
+
 for which_seed = 1:NUM_SEEDS,
 	seed = walk_set.seeds(which_seed);
 	s = sparse( seed, 1, 1, n, 1 );
@@ -64,10 +74,17 @@ for which_seed = 1:NUM_SEEDS,
 
 	temp_ppr = s;
 	sa = s;
+	sk = s;
+
+	hk_coeff = 1;
+	t = hk_t;
 
 	for k=1:MAX_TERMS,
 		s = P*s;
 		sa = (P*sa).*alpha;
+		sk = (P*sk).*(t/hk_coeff);
+		hk_coeff = hk_coeff + 1;
+		temp_hk = temp_hk + sk;
 		temp_ppr = temp_ppr + sa;
 
 		supp = find(s);
@@ -106,9 +123,26 @@ for which_seed = 1:NUM_SEEDS,
 		ppr_set.bound(k,which_seed) =  sqrt( (2*ppr'*(nL*ppr) / ( ppr'* (dinvppr) ))/a  ) ;
 		ppr_set.supp_vol(k,which_seed) = full(sum( d(supp) ) );
 
+		% now do HK
+		hk = temp_ppr./sum(temp_hk);
+		supp = find(hk);
+		dinvhk = Dinv*hk;
+
+		[bestset,bestcond,bestcut,bestvol,noderank] = sweepcut(A,hk,'halfvol',false);
+		hk_set.conds(k,which_seed) = bestcond;
+		hk_set.vols(k,which_seed) = bestvol;
+		hk_set.sizes(k,which_seed) = nnz(bestset);
+		
+		c = full(min(dinvhk))^2*walk_set.total_volume;
+		b = c/( dinvhk'*hk );
+		a = (1 - b);
+
+		hk_set.bound(k,which_seed) =  sqrt( (2*hk'*(nL*hk) / ( hk'* (dinvhk) ))/a  ) ;
+		hk_set.supp_vol(k,which_seed) = full(sum( d(supp) ) );
+
 	end
 	fprintf('Done with %s  seed %d / %d\n', fname, which_seed, NUM_SEEDS );
 end
-save( [ save_dir, 'walk_v_ppr', fname, '.mat'], 'walk_set', 'ppr_set' );
+save( [ save_dir, 'walk_v_ppr', fname, '.mat'], 'walk_set', 'ppr_set', 'hk_set' );
 
 
