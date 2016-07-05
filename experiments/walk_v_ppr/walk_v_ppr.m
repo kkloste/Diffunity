@@ -73,6 +73,7 @@ for which_seed = 1:NUM_SEEDS,
 	[bestset,bestcond,bestcut,bestvol,noderank] = sweepcut(A,s);
 
 	temp_ppr = s;
+	temp_hk = s;
 	sa = s;
 	sk = s;
 
