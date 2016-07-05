@@ -8,7 +8,7 @@ function walk_v_ppr( varargin )
 p = inputParser;
 p.addOptional('fname','netscience-cc');
 p.addOptional('alpha',0.9,@isnumeric);
-p.addOptional('hk_t',1,@isnumeric);
+p.addOptional('hk_t',1.0,@isnumeric);
 p.parse(varargin{:});
 
 hk_t = p.Results.hk_t;
@@ -67,7 +67,7 @@ for which_seed = 1:NUM_SEEDS,
 	sa = s;
 	sk = s;
 
-	hk_coeff = 1;
+	hk_coeff = 1.0;
 	t = hk_t;
 
 	for k=1:MAX_TERMS,
@@ -75,7 +75,7 @@ for which_seed = 1:NUM_SEEDS,
 		sa = (P*sa).*alpha;
 		sk = (P*sk).*(t/hk_coeff);
 		slazy = slazy + P*slazy ;
-		hk_coeff = hk_coeff + 1;
+		hk_coeff = hk_coeff + 1.0;
 		temp_hk = temp_hk + sk;
 		temp_ppr = temp_ppr + sa;
 
@@ -86,7 +86,7 @@ for which_seed = 1:NUM_SEEDS,
 		ppr_set = update_struct_sweep_info( ppr_set, temp_ppr, A, d, nL, graph, k, which_seed );
 
 		% now do HK
-		ppr_set = update_struct_sweep_info( ppr_set, temp_hk, A, d, nL, graph, k, which_seed );
+		hk_set = update_struct_sweep_info( hk_set, temp_hk, A, d, nL, graph, k, which_seed );
 
 		% lazy walk!
 		lazy_set = update_struct_sweep_info( lazy_set, slazy, A, d, nL, graph, k, which_seed );
