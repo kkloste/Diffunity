@@ -41,7 +41,7 @@ for which_seed = 1:NUM_SEEDS,
 
 	ylim([0,1]);
 
-	ind = find( walk_set.vols(:,which_seed) >= graph.total_volume/2, 1 );
+	ind = find( walk_set.vols(:,which_seed) >= graph.volume/2, 1 );
 	if numel(ind) ==0, ind = length(walk_set.vols); end
 	plot( [ind,ind], [0,1], '-r' );
 
