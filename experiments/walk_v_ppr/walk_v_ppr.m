@@ -59,13 +59,8 @@ ppr_set.bound = zeros(MAX_TERMS, NUM_SEEDS);
 ppr_set.supp_vol = zeros(MAX_TERMS, NUM_SEEDS);
 ppr_set.minf = zeros(MAX_TERMS, NUM_SEEDS);
 
-hk_set = struct;
-hk_set.conds = zeros(MAX_TERMS, NUM_SEEDS);
-hk_set.vols = zeros(MAX_TERMS, NUM_SEEDS);
-hk_set.sizes = zeros(MAX_TERMS, NUM_SEEDS);
-hk_set.bound = zeros(MAX_TERMS, NUM_SEEDS);
-hk_set.supp_vol = zeros(MAX_TERMS, NUM_SEEDS);
-hk_set.minf = zeros(MAX_TERMS, NUM_SEEDS);
+hk_set = ppr_set
+lazy_set = ppr_set;
 
 for which_seed = 1:NUM_SEEDS,
 	seed = walk_set.seeds(which_seed);
@@ -74,6 +69,7 @@ for which_seed = 1:NUM_SEEDS,
 
 	temp_ppr = s;
 	temp_hk = s;
+	slazy = s;
 	sa = s;
 	sk = s;
 
@@ -84,66 +80,64 @@ for which_seed = 1:NUM_SEEDS,
 		s = P*s;
 		sa = (P*sa).*alpha;
 		sk = (P*sk).*(t/hk_coeff);
+		slazy = slazy + P*slazy ;
 		hk_coeff = hk_coeff + 1;
 		temp_hk = temp_hk + sk;
 		temp_ppr = temp_ppr + sa;
 
-		supp = find(s);
-		dinvs = Dinv*s;
+		walk_set = update_struct_sweep_info( walk_set, s, A, d, nL, k, which_seed );
 
-		[bestset,bestcond,bestcut,bestvol,noderank] = sweepcut(A,s,'halfvol',false);
-		walk_set.conds(k,which_seed) = bestcond;
-		walk_set.vols(k,which_seed) = bestvol;
-		walk_set.sizes(k,which_seed) = nnz(bestset);
 		walk_set.rayleigh(k,which_seed) =  s'*(nL*s) / ( s'* (dinvs) ) ;
-		
-		c = full(min(dinvs))^2*walk_set.total_volume;
-		b = c/( dinvs'*s );
-		a = (1 - b);
-
-		walk_set.bound(k,which_seed) =  sqrt( (2*s'*(nL*s) / ( s'* (dinvs) ))/a  ) ;
-		walk_set.supp_vol(k,which_seed) = full(sum( d(supp) ) );
 		walk_set.distanceInf(k,which_seed) = norm( Dinv*(s - stdist), 'inf' );
 		walk_set.distance1(k,which_seed) = norm( Dinv*(s - stdist), 1 );
-		walk_set.minf(k,which_seed) = min(dinvs);
+
 
 		% now do PPR
 		ppr = temp_ppr./sum(temp_ppr);
-		supp = find(ppr);
-		dinvppr = Dinv*ppr;
+		ppr_set = update_struct_sweep_info( ppr_set, ppr, A, d, nL, k, which_seed );
 
-		[bestset,bestcond,bestcut,bestvol,noderank] = sweepcut(A,ppr,'halfvol',false);
-		ppr_set.conds(k,which_seed) = bestcond;
-		ppr_set.vols(k,which_seed) = bestvol;
-		ppr_set.sizes(k,which_seed) = nnz(bestset);
-		
-		c = full(min(dinvppr))^2*walk_set.total_volume;
-		b = c/( dinvppr'*ppr );
-		a = (1 - b);
-
-		ppr_set.bound(k,which_seed) =  sqrt( (2*ppr'*(nL*ppr) / ( ppr'* (dinvppr) ))/a  ) ;
-		ppr_set.supp_vol(k,which_seed) = full(sum( d(supp) ) );
+%		supp = find(ppr);
+%		dinvppr = Dinv*ppr;
+%
+%		[bestset,bestcond,bestcut,bestvol,noderank] = sweepcut(A,ppr,'halfvol',false);
+%		ppr_set.conds(k,which_seed) = bestcond;
+%		ppr_set.vols(k,which_seed) = bestvol;
+%		ppr_set.sizes(k,which_seed) = nnz(bestset);
+%		
+%		c = full(min(dinvppr))^2*walk_set.total_volume;
+%		b = c/( dinvppr'*ppr );
+%		a = (1 - b);
+%
+%		ppr_set.bound(k,which_seed) =  sqrt( (2*ppr'*(nL*ppr) / ( ppr'* (dinvppr) ))/a  ) ;
+%		ppr_set.supp_vol(k,which_seed) = full(sum( d(supp) ) );
 
 		% now do HK
 		hk = temp_hk./sum(temp_hk);
-		supp = find(hk);
-		dinvhk = Dinv*hk;
+		ppr_set = update_struct_sweep_info( ppr_set, ppr, A, d, nL, k, which_seed );
 
-		[bestset,bestcond,bestcut,bestvol,noderank] = sweepcut(A,hk,'halfvol',false);
-		hk_set.conds(k,which_seed) = bestcond;
-		hk_set.vols(k,which_seed) = bestvol;
-		hk_set.sizes(k,which_seed) = nnz(bestset);
-		
-		c = full(min(dinvhk))^2*walk_set.total_volume;
-		b = c/( dinvhk'*hk );
-		a = (1 - b);
-
-		hk_set.bound(k,which_seed) =  sqrt(  ((2*hk'*(nL*hk) / ( hk'* (dinvhk) )))/a  ) ;
-		hk_set.supp_vol(k,which_seed) = full(sum( d(supp) ) );
+		% lazy walk!
+		temp_slazy = slazy./sum(slazy);
+		lazy_set = update_struct_sweep_info( lazy_set, temp_slazy, A, d, nL, k, which_seed );
 
 	end
 	fprintf('Done with %s  seed %d / %d\n', fname, which_seed, NUM_SEEDS );
 end
 save( [ save_dir, 'walk_v_ppr', fname, '.mat'], 'walk_set', 'ppr_set', 'hk_set' );
 
+end
 
+function [walk_set] = update_struct_sweep_info( walk_set, s, A, d, nL, k, which_seed );
+		supp = find(s);
+		dinvs = s./d;
+		walk_set.supp_vol(k,which_seed) = full(sum( d(supp) ) );
+
+		[bestset,bestcond,bestcut,bestvol,noderank] = sweepcut(A,s,'halfvol',false);
+		walk_set.conds(k,which_seed) = bestcond;
+		walk_set.vols(k,which_seed) = bestvol;
+		walk_set.sizes(k,which_seed) = nnz(bestset);
+		walk_set.minf(k,which_seed) = min(dinvs);
+		c = full(min(dinvs))^2*walk_set.total_volume;
+		b = c/( dinvs'*s );
+		a = (1 - b);
+		walk_set.bound(k,which_seed) =  sqrt( (2*s'*(nL*s) / ( s'* (dinvs) ))/a  ) ;
+end
