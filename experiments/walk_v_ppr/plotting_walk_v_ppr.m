@@ -33,13 +33,13 @@ for which_seed = 1:NUM_SEEDS,
 
 	ylim([0,1]);
 
-	ind = find( walk_set.vols(:,which_seed) >= walk_set.total_volume/2, 1 );
-	if numel(ind) ==0, ind = length(walk_set.vols); end
-	plot( [ind,ind], [0,1] );
+%	ind = find( walk_set.vols(:,which_seed) >= walk_set.total_volume/2, 1 );
+%	if numel(ind) ==0, ind = length(walk_set.vols); end
+%	plot( [ind,ind], [0,1] );
 
-	ind = find( ppr_set.vols(:,which_seed) >= walk_set.total_volume/2, 1 );
-	if numel(ind) ==0, ind = length(ppr_set.vols); end
-	plot( [ind,ind], [0,1] );
+%	ind = find( ppr_set.vols(:,which_seed) >= walk_set.total_volume/2, 1 );
+%	if numel(ind) ==0, ind = length(ppr_set.vols); end
+%	plot( [ind,ind], [0,1] );
 
 	title( sprintf( '%s, seed %d', fname, num2str(which_seed) ) );
 	xlabel('Walk term');

@@ -125,7 +125,7 @@ for which_seed = 1:NUM_SEEDS,
 		ppr_set.supp_vol(k,which_seed) = full(sum( d(supp) ) );
 
 		% now do HK
-		hk = temp_ppr./sum(temp_hk);
+		hk = temp_hk./sum(temp_hk);
 		supp = find(hk);
 		dinvhk = Dinv*hk;
 
