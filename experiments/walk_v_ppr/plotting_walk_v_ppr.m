@@ -41,9 +41,9 @@ for which_seed = 1:NUM_SEEDS,
 
 	ylim([0,1]);
 
-%	ind = find( walk_set.vols(:,which_seed) >= walk_set.total_volume/2, 1 );
-%	if numel(ind) ==0, ind = length(walk_set.vols); end
-%	plot( [ind,ind], [0,1] );
+	ind = find( walk_set.vols(:,which_seed) >= walk_set.total_volume/2, 1 );
+	if numel(ind) ==0, ind = length(walk_set.vols); end
+	plot( [ind,ind], [0,1] );
 
 %	ind = find( ppr_set.vols(:,which_seed) >= walk_set.total_volume/2, 1 );
 %	if numel(ind) ==0, ind = length(ppr_set.vols); end
@@ -51,7 +51,7 @@ for which_seed = 1:NUM_SEEDS,
 
 	title( sprintf( '%s, seed %d', fname, num2str(which_seed) ) );
 	xlabel('Walk term');
-	legend('walk-cond', 'walk-bound', 'ppr-cond','ppr-bound', 'hk-cond', 'hk-bound', 'location','Northeast');
+	legend('walk-cond', 'walk-bound', 'ppr-cond','ppr-bound', 'hk-cond', 'hk-bound', 'lazy-cond', 'lazy-bound', 'location','Northeast');
 	print(gcf,[ image_dir, 'walk-v-ppr-', fname, '-', num2str(which_seed), '.png'],'-dpng');
 
 	fprintf('Done plotting %s  seed %d / %d\n', fname, which_seed, NUM_SEEDS );
