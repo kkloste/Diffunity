@@ -138,7 +138,7 @@ for which_seed = 1:NUM_SEEDS,
 		b = c/( dinvhk'*hk );
 		a = (1 - b);
 
-		hk_set.bound(k,which_seed) =  sqrt( (2*hk'*(nL*hk) / ( hk'* (dinvhk) ))/a  ) ;
+		hk_set.bound(k,which_seed) =  sqrt(  ((2*hk'*(nL*hk) / ( hk'* (dinvhk) )))/a  ) ;
 		hk_set.supp_vol(k,which_seed) = full(sum( d(supp) ) );
 
 	end

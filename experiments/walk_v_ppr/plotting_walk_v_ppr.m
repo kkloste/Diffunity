@@ -1,9 +1,14 @@
+function plotting_walk_v_ppr( varargin )
 % Sweep over walk vectors of different lengths and compare conductance
 % to rayleigh quotient
 %
 
+p = inputParser;
+p.addOptional('fname','netscience-cc');
+p.parse(varargin{:});
+
 clear; clc; 
-fname = 'netscience-cc';
+fname = p.Results.fname;
 
 load_dir = './results/';
 image_dir = './images/';
