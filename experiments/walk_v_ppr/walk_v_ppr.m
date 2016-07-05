@@ -52,11 +52,11 @@ walk_set.supp_vol = zeros(MAX_TERMS, NUM_SEEDS);
 walk_set.minf = zeros(MAX_TERMS, NUM_SEEDS);
 
 ppr_set = walk_set;
-hk_set = ppr_set;
-lazy_set = ppr_set;
+hk_set = walk_set;
+lazy_set = walk_set;
 
 for which_seed = 1:NUM_SEEDS,
-	seed = walk_set.seeds(which_seed);
+	seed = graph.seeds(which_seed);
 	s = sparse( seed, 1, 1, n, 1 );
 	[bestset,bestcond,bestcut,bestvol,noderank] = sweepcut(A,s);
 
@@ -78,16 +78,17 @@ for which_seed = 1:NUM_SEEDS,
 		temp_hk = temp_hk + sk;
 		temp_ppr = temp_ppr + sa;
 
+		% standard random walk
 		walk_set = update_struct_sweep_info( walk_set, s, A, d, nL, graph, k, which_seed );
 
 		% now do PPR
-		ppr_set = update_struct_sweep_info( ppr_set, ppr, A, d, nL, graph, k, which_seed );
+		ppr_set = update_struct_sweep_info( ppr_set, temp_ppr, A, d, nL, graph, k, which_seed );
 
 		% now do HK
-		ppr_set = update_struct_sweep_info( ppr_set, ppr, A, d, nL, graph, k, which_seed );
+		ppr_set = update_struct_sweep_info( ppr_set, temp_hk, A, d, nL, graph, k, which_seed );
 
 		% lazy walk!
-		lazy_set = update_struct_sweep_info( lazy_set, temp_slazy, A, d, nL, graph, k, which_seed );
+		lazy_set = update_struct_sweep_info( lazy_set, slazy, A, d, nL, graph, k, which_seed );
 
 	end
 	fprintf('Done with %s  seed %d / %d\n', fname, which_seed, NUM_SEEDS );
