@@ -23,32 +23,30 @@ addpath ../../util;
 NUM_SEEDS = length(graph.seeds);
 for which_seed = 1:NUM_SEEDS,
 	clf;
-	plot( walk_set.conds(:, which_seed) );
-	hold all;
-	plot( walk_set.bound(:, which_seed) );
 
-	plot( ppr_set.conds(:, which_seed) );
+% conductances
+	plot( walk_set.conds(:, which_seed), '-r' );
 	hold all;
-	plot( ppr_set.bound(:, which_seed) );
+	plot( ppr_set.conds(:, which_seed) , '-b' );
+	plot( hk_set.conds(:, which_seed), '-g'  );
+	plot( lazy_set.conds(:, which_seed) , '-y' );
 
-	plot( hk_set.conds(:, which_seed) );
-	hold all;
-	plot( hk_set.bound(:, which_seed) );
-
-	plot( lazy_set.conds(:, which_seed) );
-	hold all;
-	plot( lazy_set.bound(:, which_seed) );
+% bounds
+	plot( walk_set.bound(:, which_seed) , '--r' );
+	plot( ppr_set.bound(:, which_seed) , '--b' );
+	plot( hk_set.bound(:, which_seed) , '--g' );
+	plot( lazy_set.bound(:, which_seed),  '--y' );
 
 	ylim([0,1]);
 
 	ind = find( walk_set.vols(:,which_seed) >= graph.volume/2, 1 );
 	if numel(ind) ==0, ind = length(walk_set.vols); end
-	plot( [ind,ind], [0,1], '-r' );
+	plot( [ind,ind], [0,1], ':k' );
 
 
 	title( sprintf( '%s, seed %d', fname, num2str(which_seed) ) );
 	xlabel('Walk term');
-	legend('walk-cond', 'walk-bound', 'ppr-cond','ppr-bound', 'hk-cond', 'hk-bound', 'lazy-cond', 'lazy-bound', 'half vol', 'location','Northeast');
+	legend('walk-cond',  'ppr-cond','hk-cond', 'lazy-cond', 'walk-bound', 'ppr-bound', 'hk-bound', 'lazy-bound', 'half vol', 'location','Northeast');
 	print(gcf,[ image_dir, 'walk-v-ppr-', fname, '-', num2str(which_seed), '.png'],'-dpng');
 
 	fprintf('Done plotting %s  seed %d / %d\n', fname, which_seed, NUM_SEEDS );
