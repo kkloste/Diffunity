@@ -43,7 +43,7 @@ for which_seed = 1:NUM_SEEDS,
 
 	title( sprintf( '%s, seed %d', fname, num2str(which_seed) ) );
 	xlabel('Walk term');
-	legend('walk-cond', 'walk-bound', 'ppr-cond','ppr-bound', 'location','Northeast');
+	legend('walk-cond', 'walk-bound', 'ppr-cond','ppr-bound', 'hk-cond', 'hk-bound', 'location','Northeast');
 	print(gcf,[ image_dir, 'walk-v-ppr-', fname, '-', num2str(which_seed), '.png'],'-dpng');
 
 	fprintf('Done plotting %s  seed %d / %d\n', fname, which_seed, NUM_SEEDS );
