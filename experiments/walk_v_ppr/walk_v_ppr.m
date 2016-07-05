@@ -36,30 +36,23 @@ stdist = ones(n,1)./n;
 MAX_TERMS = 100;
 NUM_SEEDS = 10;
 
-walk_set = struct;
+graph = struct;
 dummy = randn(n,1);
 [~,perm] = sort(dummy);
-walk_set.seeds = perm(1:10); % 10 unique seeds
+graph.seeds = perm(1:10); % 10 unique seeds
+graph.volume = nnz(A);
+graph.size = size(A,1);
+
+walk_set = struct;
 walk_set.conds = zeros(MAX_TERMS, NUM_SEEDS);
 walk_set.vols = zeros(MAX_TERMS, NUM_SEEDS);
 walk_set.sizes = zeros(MAX_TERMS, NUM_SEEDS);
-walk_set.rayleigh = zeros(MAX_TERMS, NUM_SEEDS);
 walk_set.bound = zeros(MAX_TERMS, NUM_SEEDS);
 walk_set.supp_vol = zeros(MAX_TERMS, NUM_SEEDS);
-walk_set.distance1 = zeros(MAX_TERMS, NUM_SEEDS);
-walk_set.distanceInf = zeros(MAX_TERMS, NUM_SEEDS);
 walk_set.minf = zeros(MAX_TERMS, NUM_SEEDS);
-walk_set.total_volume = nnz(A);
 
-ppr_set = struct;
-ppr_set.conds = zeros(MAX_TERMS, NUM_SEEDS);
-ppr_set.vols = zeros(MAX_TERMS, NUM_SEEDS);
-ppr_set.sizes = zeros(MAX_TERMS, NUM_SEEDS);
-ppr_set.bound = zeros(MAX_TERMS, NUM_SEEDS);
-ppr_set.supp_vol = zeros(MAX_TERMS, NUM_SEEDS);
-ppr_set.minf = zeros(MAX_TERMS, NUM_SEEDS);
-
-hk_set = ppr_set
+ppr_set = walk_set;
+hk_set = ppr_set;
 lazy_set = ppr_set;
 
 for which_seed = 1:NUM_SEEDS,
@@ -85,39 +78,16 @@ for which_seed = 1:NUM_SEEDS,
 		temp_hk = temp_hk + sk;
 		temp_ppr = temp_ppr + sa;
 
-		walk_set = update_struct_sweep_info( walk_set, s, A, d, nL, k, which_seed );
-
-		walk_set.rayleigh(k,which_seed) =  s'*(nL*s) / ( s'* (dinvs) ) ;
-		walk_set.distanceInf(k,which_seed) = norm( Dinv*(s - stdist), 'inf' );
-		walk_set.distance1(k,which_seed) = norm( Dinv*(s - stdist), 1 );
-
+		walk_set = update_struct_sweep_info( walk_set, s, A, d, nL, graph, k, which_seed );
 
 		% now do PPR
-		ppr = temp_ppr./sum(temp_ppr);
-		ppr_set = update_struct_sweep_info( ppr_set, ppr, A, d, nL, k, which_seed );
-
-%		supp = find(ppr);
-%		dinvppr = Dinv*ppr;
-%
-%		[bestset,bestcond,bestcut,bestvol,noderank] = sweepcut(A,ppr,'halfvol',false);
-%		ppr_set.conds(k,which_seed) = bestcond;
-%		ppr_set.vols(k,which_seed) = bestvol;
-%		ppr_set.sizes(k,which_seed) = nnz(bestset);
-%		
-%		c = full(min(dinvppr))^2*walk_set.total_volume;
-%		b = c/( dinvppr'*ppr );
-%		a = (1 - b);
-%
-%		ppr_set.bound(k,which_seed) =  sqrt( (2*ppr'*(nL*ppr) / ( ppr'* (dinvppr) ))/a  ) ;
-%		ppr_set.supp_vol(k,which_seed) = full(sum( d(supp) ) );
+		ppr_set = update_struct_sweep_info( ppr_set, ppr, A, d, nL, graph, k, which_seed );
 
 		% now do HK
-		hk = temp_hk./sum(temp_hk);
-		ppr_set = update_struct_sweep_info( ppr_set, ppr, A, d, nL, k, which_seed );
+		ppr_set = update_struct_sweep_info( ppr_set, ppr, A, d, nL, graph, k, which_seed );
 
 		% lazy walk!
-		temp_slazy = slazy./sum(slazy);
-		lazy_set = update_struct_sweep_info( lazy_set, temp_slazy, A, d, nL, k, which_seed );
+		lazy_set = update_struct_sweep_info( lazy_set, temp_slazy, A, d, nL, graph, k, which_seed );
 
 	end
 	fprintf('Done with %s  seed %d / %d\n', fname, which_seed, NUM_SEEDS );
@@ -126,7 +96,9 @@ save( [ save_dir, 'walk_v_ppr', fname, '.mat'], 'walk_set', 'ppr_set', 'hk_set' 
 
 end
 
-function [walk_set] = update_struct_sweep_info( walk_set, s, A, d, nL, k, which_seed );
+function [walk_set] = update_struct_sweep_info( walk_set, s, A, d, nL, graph, k, which_seed );
+		s = s./sum(s);
+
 		supp = find(s);
 		dinvs = s./d;
 		walk_set.supp_vol(k,which_seed) = full(sum( d(supp) ) );
@@ -136,8 +108,9 @@ function [walk_set] = update_struct_sweep_info( walk_set, s, A, d, nL, k, which_
 		walk_set.vols(k,which_seed) = bestvol;
 		walk_set.sizes(k,which_seed) = nnz(bestset);
 		walk_set.minf(k,which_seed) = min(dinvs);
-		c = full(min(dinvs))^2*walk_set.total_volume;
+		c = full(min(dinvs))^2*graph.volume;
 		b = c/( dinvs'*s );
 		a = (1 - b);
 		walk_set.bound(k,which_seed) =  sqrt( (2*s'*(nL*s) / ( s'* (dinvs) ))/a  ) ;
+		walk_set.rayleigh(k,which_seed) =  sqrt( 2*s'*(nL*s) / ( s'* (dinvs) )  ) ;
 end
