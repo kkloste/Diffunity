@@ -42,6 +42,7 @@ dummy = randn(n,1);
 graph.seeds = perm(1:10); % 10 unique seeds
 graph.volume = nnz(A);
 graph.size = size(A,1);
+graph.fname = fname;
 
 walk_set = struct;
 walk_set.conds = zeros(MAX_TERMS, NUM_SEEDS);
@@ -93,7 +94,7 @@ for which_seed = 1:NUM_SEEDS,
 	end
 	fprintf('Done with %s  seed %d / %d\n', fname, which_seed, NUM_SEEDS );
 end
-save( [ save_dir, 'walk_v_ppr', fname, '.mat'], 'walk_set', 'ppr_set', 'hk_set' );
+save( [ save_dir, 'walk_v_ppr', fname, '.mat'], 'walk_set', 'ppr_set', 'hk_set', 'lazy_set', 'graph');
 
 end
 

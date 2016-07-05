@@ -2,6 +2,7 @@ function plotting_walk_v_ppr( varargin )
 % Sweep over walk vectors of different lengths and compare conductance
 % to rayleigh quotient
 %
+% p.addOptional('fname','netscience-cc');
 
 p = inputParser;
 p.addOptional('fname','netscience-cc');
@@ -19,7 +20,7 @@ addpath ../../util;
 % walk_set:  seed, conds, vols, sizes, rayleigh, bound
 %		supp_vol, distance1, distanceInf, minf
 % ppr_set:   conds, vols, sizes, bound, supp_vol
-NUM_SEEDS = length(walk_set.seeds);
+NUM_SEEDS = length(graph.seeds);
 for which_seed = 1:NUM_SEEDS,
 	clf;
 	plot( walk_set.conds(:, which_seed) );
@@ -34,6 +35,9 @@ for which_seed = 1:NUM_SEEDS,
 	hold all;
 	plot( hk_set.bound(:, which_seed) );
 
+	plot( lazy_set.conds(:, which_seed) );
+	hold all;
+	plot( lazy_set.bound(:, which_seed) );
 
 	ylim([0,1]);
 
