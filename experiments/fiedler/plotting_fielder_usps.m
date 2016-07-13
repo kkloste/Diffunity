@@ -16,12 +16,12 @@ for j=1:20,
 	vert = bestset(j);
 	neighb = A(:,vert);
 	neighb_in = intersect(neighb,bestset);
-	scatter( neighb_in, vert*ones(length(neighb_in),1 ), 'b', markersize, 'filled' );
-	scatter( vert*ones(length(neighb_in),1 ), neighb_in, 'b', markersize, 'filled' );
+	scatter( neighb_in, vert*ones(length(neighb_in),1 ), markersize, 'b', 'filled' );
+	scatter( vert*ones(length(neighb_in),1 ), neighb_in, markersize, 'b', 'filled' );
 
 	neighb_out = setdiff(neighb, neighb_in);
-	scatter( neighb_out, vert*ones(length(neighb_out), 1 ), 'r', markersize, 'filled' );
-	scatter( vert*ones(length(neighb_out), 1 ), neighb_out, 'r', markersize, 'filled' );
+	scatter( neighb_out, vert*ones(length(neighb_out), 1 ), markersize, 'r', 'filled' );
+	scatter( vert*ones(length(neighb_out), 1 ), neighb_out, markersize, 'r', 'filled' );
 
 end
 
