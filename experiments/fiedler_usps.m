@@ -35,7 +35,7 @@ print( './images/usps3nn_spy','-dpng','-r600','-painters');
 
 for j=1:length(bestset),
 	vert = bestset(j);
-	neighb = A(:,j);
+	neighb = A(:,bestset);
 	neighb_in = intersect(neighb,bestset);
 	scatter( neighb_in, vert*ones(length(neighb_in) ), 'b' );
 	scatter( vert*ones(length(neighb_in) ), neighb_in, 'b' );
