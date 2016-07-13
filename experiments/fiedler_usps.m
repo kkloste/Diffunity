@@ -33,16 +33,17 @@ spy(A,'k');
 title('sparsity pattern, USPS');
 print( './images/usps3nn_spy','-dpng','-r600','-painters');
 
-for j=1:length(bestset),
+%for j=1:length(bestset),
+for j=1:20,
 	vert = bestset(j);
 	neighb = A(:,bestset);
 	neighb_in = intersect(neighb,bestset);
-	scatter( neighb_in, vert*ones(length(neighb_in) ), 'b' );
-	scatter( vert*ones(length(neighb_in) ), neighb_in, 'b' );
+	scatter( neighb_in, vert*ones(length(neighb_in),1 ), 'b' );
+	scatter( vert*ones(length(neighb_in),1 ), neighb_in, 'b' );
 
 	neighb_out = setdiff(neighb, neighb_in);
-	scatter( neighb_out, vert*ones(length(neighb_out) ), 'r' );
-	scatter( vert*ones(length(neighb_out) ), neighb_out, 'r' );
+	scatter( neighb_out, vert*ones(length(neighb_out), 1 ), 'r' );
+	scatter( vert*ones(length(neighb_out), 1 ), neighb_out, 'r' );
 
 end
 
