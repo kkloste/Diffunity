@@ -41,6 +41,8 @@ for which_seed = 1:NUM_SEEDS,
 	title( sprintf( '%s, seed %d', fname, num2str(which_seed) ) );
 	xlabel('Walk term');
 	legend('walk-cond',  'ppr-cond','hk-cond', 'lazy-cond', 'half vol', 'location','Northeast');
+
+	set_figure_size( [3,3] );
 	print(gcf,[ image_dir, 'walk-v-ppr-', fname, '-', num2str(which_seed), 'cond.png'],'-dpng');
 
 
@@ -64,6 +66,7 @@ for which_seed = 1:NUM_SEEDS,
 	title( sprintf( '%s, seed %d', fname, num2str(which_seed) ) );
 	xlabel('Walk term');
 	legend('walk-bound', 'ppr-bound', 'hk-bound', 'lazy-bound', 'half vol', 'location','Northeast');
+	set_figure_size( [3,3] );
 	print(gcf,[ image_dir, 'walk-v-ppr-', fname, '-', num2str(which_seed), 'bound.png'],'-dpng');
 
 	fprintf('Done plotting %s  seed %d / %d\n', fname, which_seed, NUM_SEEDS );
