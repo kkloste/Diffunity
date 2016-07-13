@@ -15,7 +15,7 @@ hold all
 
 for j=1:length(bestset),
 	vert = bestset(j);
-	neighb = A(:,vert);
+	neighb = find(A(:,vert));
 	neighb_in = intersect(neighb,bestset);
 	scatter( neighb_in, vert*ones(length(neighb_in),1 ), markersize, 'b', 'filled' );
 	scatter( vert*ones(length(neighb_in),1 ), neighb_in, markersize, 'b', 'filled' );
