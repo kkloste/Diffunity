@@ -6,7 +6,7 @@
 clc;
 addpath ../util; % for set_figure_size
 load ../data/xy_1.mat ;
-addpath ../diffusions_codes ; for sweep cut
+addpath ../diffusions_codes ; %for sweep cut
 
 A = A|A';
 A = A-diag(diag(A));
