@@ -29,7 +29,7 @@ fprintf( ' min_lam = %f ,   f^T*nL*f = %f \n' , min_lam, fiedler'*nL*fiedler );
 [bestset,bestcond,bestcut,bestvol,noderank] = sweepcut(A,fiedler,'halfvol',true) ;
 
 
-spy(A,'LineSpec','k');
+spy(A,'k');
 title('sparsity pattern, USPS');
 print( './images/usps3nn_spy','-dpng','-r600','-painters');
 
