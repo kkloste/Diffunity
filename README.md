@@ -20,7 +20,7 @@ Codes for algorithms:
 * `gendiff_grow.m` -- NOT DONE: will be a matlab wrapper for gendiff
 2. `pprgrow_mex.cc` and `pprgrow.m` are from [ Gleich & Seshadhri KDD 2012 ]
 	* adapted to output both the personalized pagerank diffusion and its set of best conductance.
-* `reg_power_mex.cpp` -- given sparse input matrix A and vector v, computes A^k*v in a sparse manner for an input power k.
+* `reg_power_mex.cpp` -- given sparse input matrix A and vector v, computes A^k*v exactly (i.e. no rounding) but in a sparse manner for an input power k.
 * `hkgrow_mex.cpp` -- up-to-date implementation of heat kernel diffusion from [Gleich & Kloster 2014]
 
 

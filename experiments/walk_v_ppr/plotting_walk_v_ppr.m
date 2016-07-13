@@ -31,7 +31,23 @@ for which_seed = 1:NUM_SEEDS,
 	plot( hk_set.conds(:, which_seed), '-g'  );
 	plot( lazy_set.conds(:, which_seed) , '-y' );
 
+	ylim([0,1]);
+
+	ind = find( walk_set.vols(:,which_seed) >= graph.volume/2, 1 );
+	if numel(ind) ==0, ind = length(walk_set.vols); end
+	plot( [ind,ind], [0,1], ':k' );
+
+
+	title( sprintf( '%s, seed %d', fname, num2str(which_seed) ) );
+	xlabel('Walk term');
+	legend('walk-cond',  'ppr-cond','hk-cond', 'lazy-cond', 'half vol', 'location','Northeast');
+	print(gcf,[ image_dir, 'walk-v-ppr-', fname, '-', num2str(which_seed), 'cond.png'],'-dpng');
+
+
+
+
 % bounds
+	clf;
 	plot( walk_set.bound(:, which_seed) , '--r' );
 	plot( ppr_set.bound(:, which_seed) , '--b' );
 	plot( hk_set.bound(:, which_seed) , '--g' );
@@ -46,8 +62,8 @@ for which_seed = 1:NUM_SEEDS,
 
 	title( sprintf( '%s, seed %d', fname, num2str(which_seed) ) );
 	xlabel('Walk term');
-	legend('walk-cond',  'ppr-cond','hk-cond', 'lazy-cond', 'walk-bound', 'ppr-bound', 'hk-bound', 'lazy-bound', 'half vol', 'location','Northeast');
-	print(gcf,[ image_dir, 'walk-v-ppr-', fname, '-', num2str(which_seed), '.png'],'-dpng');
+	legend('walk-bound', 'ppr-bound', 'hk-bound', 'lazy-bound', 'half vol', 'location','Northeast');
+	print(gcf,[ image_dir, 'walk-v-ppr-', fname, '-', num2str(which_seed), 'bound.png'],'-dpng');
 
 	fprintf('Done plotting %s  seed %d / %d\n', fname, which_seed, NUM_SEEDS );
 end
