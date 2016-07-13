@@ -36,7 +36,7 @@ cmappart = hot(9);
 cmap = @() colormap(flipud(cmappart(2:6,:)));
 [px,py] = gplot(A,xy);
 gdraw = @() plot(px,py,'k-','LineWidth',0.4,'Color',0.55*[1,1,1]); 
-% sdraw = @() plot(xy(S,1),xy(S,2),'ko','MarkerSize',7);
+sdraw = @() plot(xy(1:n,1),xy(1:n,2),'ko','MarkerSize',7);
 bigmarkers = 15;
 smallmarkers = 2;
 figsize = [2.75,2.75];
@@ -52,8 +52,13 @@ clf;
     gdraw(); hold on; 
 %    plot(xy((vert),1),xy((vert),2),'ko','MarkerSize',7);
     scatter(xy(bestset,1),xy(bestset,2),bigmarkers,'b','filled'); cmap();
-    caxis([-3,0]);
+%    caxis([-3,0]);
     set_figure_size(figsize);
-    axis(figarea);
+%    axis(figarea);
+
+axis off
+box off
+
+title( 'fiedler cut, netscience')
  
     print( './images/fiedler_cut','-dpng','-r600','-painters');
