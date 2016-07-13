@@ -1,5 +1,5 @@
 function [bestset,bestcond,bestcut,bestvol,noderank] = sweepcut(A,vector,varargin)
-% [bestset,bestcond,bestcut,bestvol,noderank] = sweepcut(A,vector,debugflag)
+% [bestset,bestcond,bestcut,bestvol,noderank] = sweepcut(A,vector,varargin)
 %
 %	INPUTS:
 %		A       	-- symmetric, unweighted adjacency matrix
