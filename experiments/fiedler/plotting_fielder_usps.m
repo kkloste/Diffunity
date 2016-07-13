@@ -12,6 +12,8 @@ title('sparsity pattern, USPS');
 print( './images/usps3nn_spy','-dpng','-r600','-painters');
 
 %for j=1:length(bestset),
+hold all
+
 for j=1:20,
 	vert = bestset(j);
 	neighb = A(:,vert);
