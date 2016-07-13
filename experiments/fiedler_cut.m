@@ -6,6 +6,7 @@
 clc;
 addpath ../util; % for set_figure_size
 load ../data/xy_1.mat ;
+addpath ../diffusions_codes ; for sweep cut
 
 A = A|A';
 A = A-diag(diag(A));
@@ -30,14 +31,12 @@ fprintf( ' min_lam = %f ,   f^T*nL*f = %f \n' , min_lam, fiedler'*nL*fiedler );
 
 
 
-
-
 %% PLOT
 cmappart = hot(9);
 cmap = @() colormap(flipud(cmappart(2:6,:)));
 [px,py] = gplot(A,xy);
 gdraw = @() plot(px,py,'k-','LineWidth',0.4,'Color',0.55*[1,1,1]); 
-sdraw = @() plot(xy(S,1),xy(S,2),'ko','MarkerSize',7);
+% sdraw = @() plot(xy(S,1),xy(S,2),'ko','MarkerSize',7);
 bigmarkers = 15;
 smallmarkers = 2;
 figsize = [2.75,2.75];
@@ -50,11 +49,9 @@ vert = 211; % chosen as an illustrative example
 %%
 clf;
 
-    f = x > 0;
-    cla;
     gdraw(); hold on; 
-    plot(xy((vert),1),xy((vert),2),'ko','MarkerSize',7);
-    scatter(xy(f,1),xy(f,2),bigmarkers,log10(x(f)),'filled'); cmap();
+%    plot(xy((vert),1),xy((vert),2),'ko','MarkerSize',7);
+    scatter(xy(bestset,1),xy(bestset,2),bigmarkers,'b','filled'); cmap();
     caxis([-3,0]);
     set_figure_size(figsize);
     axis(figarea);
