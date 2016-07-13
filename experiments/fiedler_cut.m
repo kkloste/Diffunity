@@ -6,7 +6,7 @@
 clc;
 addpath ../util; % for set_figure_size
 load ../data/xy_1.mat ;
-addpath ../diffusions_codes ; %for sweep cut
+addpath ../diffusion_codes ; %for sweep cut
 
 A = A|A';
 A = A-diag(diag(A));
@@ -63,3 +63,28 @@ box off
 title( 'fiedler cut, netscience')
  
     print( './images/fiedler_cut','-dpng','-r600','-painters');
+
+clf;
+
+%% PLOT
+[px,py] = gplot(A,xy);
+gdraw = @() plot(px,py,'k-','LineWidth',0.4,'Color',0.55*[1,1,1]); 
+sdraw = @() plot(xy(1:n,1),xy(1:n,2),'ko','MarkerSize',7);
+bigmarkers = 15;
+smallmarkers = 2;
+figsize = [2.75,2.75];
+figarea = [0,220,-600,-120];
+
+%%
+clf;
+
+    gdraw(); hold on; 
+	scatter( xy(1:n,1),xy(1:n,2), 7, 'k', 'filled');
+    set_figure_size(figsize);
+
+axis off
+box off
+
+title( 'netscience')
+ 
+    print( './images/netscience','-dpng','-r600','-painters');
