@@ -50,6 +50,7 @@ vert = 211; % chosen as an illustrative example
 clf;
 
     gdraw(); hold on; 
+	scatter( xy(1:n,1),xy(1:n,2), 7, 'k', 'filled');
 %    plot(xy((vert),1),xy((vert),2),'ko','MarkerSize',7);
     scatter(xy(bestset,1),xy(bestset,2),bigmarkers,'b','filled'); cmap();
 %    caxis([-3,0]);
