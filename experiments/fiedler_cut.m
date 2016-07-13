@@ -17,12 +17,12 @@ P = colnormout(A);
 L = D - A;
 nL = Dsqinv*(L*Dsqinv);
 
-[ V, lam] = eig(nL);
+[V, lam] = eigs(nL,2,'SM');
 lam = diag(lam);
 
-min_lam = min( lam( find(lam) ) );
+[min_lam, ind_min]  = max(lam); % because 0 is min
 
-fiedler = V(:,2);
+fiedler = V(:,ind_min);
 
 fprintf( ' min_lam = %f ,   f^T*nL*f = %f \n' , min_lam, fiedler'*nL*fiedler );
 
