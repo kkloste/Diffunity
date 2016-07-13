@@ -49,6 +49,7 @@ for which_seed = 1:NUM_SEEDS,
 % bounds
 	clf;
 	plot( walk_set.bound(:, which_seed) , '--r' );
+	hold all
 	plot( ppr_set.bound(:, which_seed) , '--b' );
 	plot( hk_set.bound(:, which_seed) , '--g' );
 	plot( lazy_set.bound(:, which_seed),  '--y' );
