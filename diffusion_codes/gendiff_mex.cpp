@@ -34,13 +34,7 @@
 #include <math.h>
 
 #include "sparsevec.hpp"
-#include <unordered_set>
-#include <unordered_map>
-#define tr1ns std
-
-
-
-#include <mex.h>
+#include "mex.h"
 
 #define DEBUGPRINT(x) do { if (debugflag) { \
 mexPrintf x; mexEvalString("drawnow"); } \
@@ -213,7 +207,9 @@ void cluster_from_sweep(sparserow* G, sparsevec& p,
     std::vector<mwIndex> cutsize(prpairs.size());
     
     size_t i=0;
-    tr1ns::unordered_map<int,size_t> rank;
+    // tr1ns::unordered_map<int,size_t> rank;
+    google::dense_hash_map<int,size_t> rank;
+    
     for (vertex_prob_type::iterator it=prpairs.begin(),itend=prpairs.end();
          it!=itend; ++it, ++i) {
         rank[it->first] = i;
