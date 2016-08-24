@@ -1,6 +1,5 @@
 # Diffunity -- diffusion codes and related utilities with applications to community detection
 
-
 ## TO DO
 
 * Implement the Andersen Lang truncated lazy random walk algorithm.

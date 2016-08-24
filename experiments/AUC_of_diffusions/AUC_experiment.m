@@ -24,7 +24,7 @@ vec = reg_power_mex(A,eyej, power_k);
 [X,Y,T,AUC] = perfcurve(labels,vec,1);
 AUC
 
-vec = reg_power_mex(A,eyej, power_k+5);
+vec = reg_power_mex(A,eyej, power_k+1);
 [X,Y,T,AUC] = perfcurve(labels,vec,1);
 AUC
 

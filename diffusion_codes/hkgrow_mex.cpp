@@ -20,9 +20,9 @@
  *
  */
 
-#ifndef __APPLE__
-#define __STDC_UTF_16__ 1
-#endif
+//#ifndef __APPLE__
+//#define __STDC_UTF_16__ 1
+//#endif
 
 #include <vector>
 #include <queue>

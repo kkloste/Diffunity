@@ -11,6 +11,7 @@
 #include <limits>
 #include "sparsehash/dense_hash_map.h"
 
+
 #include "mex.h"
 
 struct sparsevec {
