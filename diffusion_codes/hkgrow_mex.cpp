@@ -20,19 +20,24 @@
  *
  */
 
-//#ifndef __APPLE__
-//#define __STDC_UTF_16__ 1
-//#endif
+#include <unordered_set>
+#include <unordered_map>
+#define tr1ns std
+
+#ifndef __APPLE__
+#define __STDC_UTF_16__ 1
+#endif
 
 #include <vector>
 #include <queue>
 #include <utility> // for pair sorting
 #include <assert.h>
-#include <limits>
+//#include <limits>
 #include <algorithm>
-#include <math.h>
+//#include <math.h>
+#include <cmath>
 
-#include "sparsevec.hpp"
+// #include "sparsevec.hpp"
 #include "mex.h"
 #include "matrix.h"
 
@@ -44,12 +49,12 @@ mexPrintf x; mexEvalString("drawnow"); } \
 int debugflag = 0;
 
 
-/*
- * struct sparsevec {
+struct sparsevec {
     typedef tr1ns::unordered_map<mwIndex,double> map_type;
     map_type map;
-    // Get an element and provide a default value when it doesn't exist
-    // This command does not insert the element into the vector
+    /** Get an element and provide a default value when it doesn't exist
+     * This command does not insert the element into the vector
+     */
     double get(mwIndex index, double default_value=0.0) {
         map_type::iterator it = map.find(index);
         if (it == map.end()) {
@@ -59,8 +64,9 @@ int debugflag = 0;
         }
     }
     
-    // Compute the sum of all the elements
-    // Implements compensated summation
+    /** Compute the sum of all the elements
+     * Implements compensated summation
+     */
     double sum() {
         double s=0.;
         for (map_type::iterator it=map.begin(),itend=map.end();it!=itend;++it) {
@@ -69,8 +75,9 @@ int debugflag = 0;
         return s;
     }
     
-    // Compute the max of the element values
-    // This operation returns the first element if the vector is empty.
+    /** Compute the max of the element values
+     * This operation returns the first element if the vector is empty.
+     */
     mwIndex max_index() {
         mwIndex index=0;
         double maxval=std::numeric_limits<double>::min();
@@ -80,7 +87,7 @@ int debugflag = 0;
         return index;
     }
 };
-*/
+
 
 struct sparserow {
     mwSize n, m;
@@ -262,8 +269,8 @@ void cluster_from_sweep(sparserow* G, sparsevec& p,
     std::vector<mwIndex> cutsize(prpairs.size());
     
     size_t i=0;
-    // tr1ns::unordered_map<int,size_t> rank;
-    google::dense_hash_map<int,size_t> rank;
+    tr1ns::unordered_map<int,size_t> rank;
+   // google::dense_hash_map<int,size_t> rank;
             
     for (vertex_prob_type::iterator it=prpairs.begin(),itend=prpairs.end();
          it!=itend; ++it, ++i) {
