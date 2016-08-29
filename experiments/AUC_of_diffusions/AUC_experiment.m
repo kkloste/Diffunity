@@ -28,10 +28,10 @@ vec = reg_power_mex(A,eyej, power_k+1);
 [X,Y,T,AUC] = perfcurve(labels,vec,1);
 AUC
 
-% % [bestset,cond,cut,vol,prvec] = pprgrow_mex(A,j,targetvol,alpha)
-% [~,~,~,~,vec] = pprgrow_mex(A,j,1/target_eps, alpha);
-% [X,Y,T,AUC] = perfcurve(labels,vec,1);
-% AUC
+% [bestset,cond,cut,vol,prvec] = pprgrow_mex(A,j,targetvol,alpha)
+[~,~,~,~,vec] = pprgrow_mex(A,j,1/target_eps, alpha);
+[X,Y,T,AUC] = perfcurve(labels,vec,1);
+AUC
 
 % [bestset,cond,cut,vol,y,npushes] = hkgrow_mex(A,set,t,eps,debugflag)
 [~,~,~,~,vec] = hkgrow_mex(A,j,hk_t,target_eps);
