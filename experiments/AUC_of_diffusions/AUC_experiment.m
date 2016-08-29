@@ -35,15 +35,16 @@ AUC
 
 % PAGERANK
 accuracy = target_eps;
-N_terms = 1+floor(  log(accuracy)/log(alpha) - 1 );
+N_terms = power_k; % 1+floor(  log(accuracy)/log(alpha) - 1 );
 coefficients = alpha.^( 0:1:(N_terms-1) );
-coefficients = coefficients./(1-alpha);
+coefficients = coefficients.*(1-alpha);
 
-[vec, bestset] = gendiff_mex1(A, seed_set, coefficients, accuracy, debugflag);
+[vec, bestset] = gendiff_mex1(A, seed_set, coefficients, accuracy);
+vec = full(vec);
 [X,Y,T,AUC] = perfcurve(labels,vec,1);
 AUC
 
 %HEAT KERNEL
-[~,~,~,~,vec] = hkgrow_mex(A,j,hk_t,target_eps);
-[X,Y,T,AUC] = perfcurve(labels,vec,1);
-AUC
+%[~,~,~,~,vec] = hkgrow_mex(A,j,hk_t,target_eps);
+%[X,Y,T,AUC] = perfcurve(labels,vec,1);
+%AUC

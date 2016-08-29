@@ -1,4 +1,4 @@
-function [diff_vec,bestset,conductance,cut,volume,num_pushes] = gendiff_mex1(A,seed_set,coefficients,accuracy,varargin)
+function [diffusion,bestset,conductance,cut,volume,num_pushes] = gendiff_mex1(A,seed_set,coefficients,accuracy,varargin)
 % GENDIFF_MEX1 outputs cluster and diffusion vector computed from 'coefficients' at vert
 %
 % [diff_vec,bestset,cond,cut,vol,npushes] = gendiff_mex1(A,seed_set,coefficients,accuracy,varargin)
@@ -25,14 +25,16 @@ p.parse(varargin{:});
 
 debugflag = p.Results.debug;
 
-assert( (1.0 - accuracy < sum(coefficients)), ...
- "\nInput error: accuracy and coefficients must satisfy (1 - accuracy < sum(coefficients) )\n" );
-assert( (sum(coefficients) <= 1) , "\nInput error: coefficients must satisfy sum(coefficients) <= 1 \n" );
+% assert( (1.0 - accuracy <= sum(coefficients)), sprintf('Input error: accuracy and coefficients must satisfy (1 - accuracy <= sum(coefficients) ), sum = %f; 1-accuracy = %f ',sum(coefficients), 1-accuracy  ) );
+% assert( (sum(coefficients) <= 1) , sprintf('Input error: coefficients must satisfy sum(coefficients) <= 1,  sum = %f ', sum(coefficients))  );
 for j=1:length(coefficients),
-	assert(   coefficients(j) >= 0 , "\nInput error: coefficients must satisfy coefficients[j] >= 0 \n" );
+	assert(   coefficients(j) >= 0 , 'Input error: coefficients must satisfy coefficients[j] >= 0 ' );
 end
 
-[bestset conductance cut volume diff_vec num_pushes] = gendiff_mex(A, seed_set, coeffs, accuracy, debugflag);
+coeff_sum = sum(coefficients);
+coefficients = coefficients./coeff_sum;
+
+[bestset conductance cut volume diff_vec num_pushes] = gendiff_mex(A, seed_set, coefficients, accuracy, debugflag);
 inds = diff_vec(:,1);
 vals = diff_vec(:,2);
 diffusion = sparse(inds, 1, vals, size(A,1), 1);

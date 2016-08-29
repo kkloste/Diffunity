@@ -110,14 +110,22 @@ int seeded_diffusion(sparserow * G, sparsevec& set, sparsevec& y, const double e
         psis[j] = psis[j-1] - coeffs[j-1];
         mxAssert(psis[j] >= 0, "coefficients not properly scaled; must be nonnegative and sum to  <= 1");
     }
+
+
+    DEBUGPRINT(("seeded_diffusion: copmuted psis \n"));
     
+
     // check eps and coeffs
     mxAssert(psis[N] <= eps/2, "coefficients input do not meet accuracy input");
     std::vector<double> pushcoeff(N,0.0);
     for (mwIndex k = 0; k < N ; k++){
         pushcoeff[k] = eps/(2*psis[k]*(double)N);
     }
+   
+
+    DEBUGPRINT(("seeded_diffusion: computed pushcoeffs \n"));
     
+
     mwIndex ri = 0;
     mwIndex npush = 0;
     double rij = 0;
@@ -136,6 +144,10 @@ int seeded_diffusion(sparserow * G, sparsevec& set, sparsevec& y, const double e
         Q.push(rentry(ri,0));
     }
     
+
+    DEBUGPRINT(("seeded_diffusion: set initial residual, size = %d \n", Q.size() ));
+    
+
     while (npush < max_push_count) {
         // STEP 1: pop top element off of heap
         ri = Q.front();
@@ -209,12 +221,18 @@ void cluster_from_sweep(sparserow* G, sparsevec& p,
     size_t i=0;
     // tr1ns::unordered_map<int,size_t> rank;
     google::dense_hash_map<int,size_t> rank;
-    
+    rank.set_empty_key((int)(-1));
+
+    DEBUGPRINT(("cluster_from_sweep: about to prep rank, prpairs.size() = %d \n", prpairs.size() ));
     for (vertex_prob_type::iterator it=prpairs.begin(),itend=prpairs.end();
          it!=itend; ++it, ++i) {
         rank[it->first] = i;
     }
     //printf("support=%i\n",prpairs.size());
+ 
+
+    DEBUGPRINT(("cluster_from_sweep: data structures prepped, prpairs.size() = %d \n", prpairs.size() ));
+    
     mwIndex total_degree = G->ai[G->m];
     mwIndex curcutsize = 0;
     mwIndex curvolume = 0;
@@ -319,7 +337,11 @@ int hypercluster_gendiff_multiple(sparserow* G, const std::vector<mwIndex>& set,
      *        ***       seeded_diffusion       is called         ***
      *      **********
      */
+
+
+    DEBUGPRINT(("seeded_diffusion: CALL DONE \n" ));
     
+
     if (nsteps == 0) {
         p = r; // just copy over the residual
     }
@@ -332,7 +354,11 @@ int hypercluster_gendiff_multiple(sparserow* G, const std::vector<mwIndex>& set,
          it!=itend;++it) {
         it->second *= (1.0/(double)std::max(G->sr_degree(it->first),(mwIndex)1));
     }
+   
+
+    DEBUGPRINT(("hypercluster_gendiff_multiple:  prepping to call cluster_from_sweep()  \n" ));
     
+
     double *outcond = NULL;
     double *outvolume = NULL;
     double *outcut = NULL;
