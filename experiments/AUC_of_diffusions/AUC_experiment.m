@@ -11,6 +11,7 @@ community = find(labels);
 % Get a random member of that community.
 j = community( randi(length(community) ) ) ;
 eyej = sparse(j,1,1,n,1);
+seed_set = j;
 
 % Prep diffusions, set parameters
 addpath ../../diffusion_codes
