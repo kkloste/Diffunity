@@ -29,11 +29,20 @@ vec = reg_power_mex(A,eyej, power_k+1);
 AUC
 
 % [bestset,cond,cut,vol,prvec] = pprgrow_mex(A,j,targetvol,alpha)
-[~,~,~,~,vec] = pprgrow_mex(A,j,1/target_eps, alpha);
+% [bestset,cond,cut,vol,y,npushes] = hkgrow_mex(A,set,t,eps,debugflag)
+% [bestset,cond,cut,vol,y,npushes] = gendiff_mex(A,seed_set,coeffs,eps,debugflag)
+
+% PAGERANK
+accuracy = target_eps;
+N_terms = 1+floor(  log(accuracy)/log(alpha) - 1 );
+coefficients = alpha.^( 0:1:(N_terms-1) );
+coefficients = coefficients./(1-alpha);
+
+[vec, bestset] = gendiff_mex1(A, seed_set, coefficients, accuracy, debugflag);
 [X,Y,T,AUC] = perfcurve(labels,vec,1);
 AUC
 
-% [bestset,cond,cut,vol,y,npushes] = hkgrow_mex(A,set,t,eps,debugflag)
+%HEAT KERNEL
 [~,~,~,~,vec] = hkgrow_mex(A,j,hk_t,target_eps);
 [X,Y,T,AUC] = perfcurve(labels,vec,1);
 AUC

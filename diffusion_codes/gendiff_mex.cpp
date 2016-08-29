@@ -7,8 +7,8 @@
  *
  *
  * USAGE:
- * [bestset,cond,cut,vol,y,npushes] = gendiff_mex(A,set,t,eps,debugflag)
- *
+ * [bestset,cond,cut,vol,y,npushes] = gendiff_mex(A,seed_set,coeffs,eps,debugflag)
+ * the coeffs and eps must satisfy (1 - eps) < sum(coeffs) <= 1, and (coeffs(j) >= 0)
  *
  * TO COMPILE:
  *
@@ -476,12 +476,16 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
         }
     }
     if (nlhs > 4) { // sets output "y" to the diffusion vector computed
-        mxArray* diffvec_mex = mxCreateDoubleMatrix(r.n,1,mxREAL);
+        mwIndex soln_size = diffvec.map.size();
+        mxArray* diffvec_mex = mxCreateDoubleMatrix(soln_size,2,mxREAL);
         plhs[4] = diffvec_mex;
         double *ci = mxGetPr(diffvec_mex);
+        size_t i = 0;
         for (sparsevec::map_type::iterator it=diffvec.map.begin(),itend=diffvec.map.end();
              it!=itend;++it) {
-            ci[it->first] = it->second;
+            ci[i] = (double)(it->first)+1.0; // must shift 1 to convert from C indices to MATLAB indices
+            ci[i + soln_size] = (double)(it->second);
+            i++;
         }
     }
 }
