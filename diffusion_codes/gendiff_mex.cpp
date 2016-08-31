@@ -94,6 +94,11 @@ int seeded_diffusion(sparserow * G, sparsevec& set, sparsevec& y, const double e
     mwIndex n = G->n;
     mwIndex N = (mwIndex)coeffs.size();
     double dummy = 1.0;
+/*
+ *  This block had been used in the case the coefficients
+ *  were approximating some larger set of coefficients.
+ *  We now handle this outside of the mex code,
+ *  in the matlab wrapper.
     for (mwIndex j=0; j< coeffs.size(); j++){
         dummy = dummy - coeffs[j];
         if (dummy <= eps/2.0){
@@ -101,6 +106,7 @@ int seeded_diffusion(sparserow * G, sparsevec& set, sparsevec& y, const double e
             break;
         }
     }
+*/
     DEBUGPRINT(("seeded_diffusion: n=%i N=%i \n", n, N));
     
     // initialize the thresholds for pushing
@@ -108,18 +114,18 @@ int seeded_diffusion(sparserow * G, sparsevec& set, sparsevec& y, const double e
     psis[0] = 1.0;
     for ( mwIndex j=1; j< N; j++){
         psis[j] = psis[j-1] - coeffs[j-1];
-        mxAssert(psis[j] >= 0, "coefficients not properly scaled; must be nonnegative and sum to  <= 1");
+        mxAssert(psis[j] >= 0, "coefficients not properly scaled; must be nonnegative and sum to 1");
     }
 
 
-    DEBUGPRINT(("seeded_diffusion: copmuted psis \n"));
+    DEBUGPRINT(("seeded_diffusion: computed psis \n"));
     
 
     // check eps and coeffs
-    mxAssert(psis[N] <= eps/2, "coefficients input do not meet accuracy input");
+    mxAssert(psis[N] <= eps, "coefficients input do not meet accuracy input");
     std::vector<double> pushcoeff(N,0.0);
     for (mwIndex k = 0; k < N ; k++){
-        pushcoeff[k] = eps/(2*psis[k]*(double)N);
+        pushcoeff[k] = eps/(psis[k]*(double)N);
     }
    
 
@@ -463,6 +469,7 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
     mxAssert( std::min(dims[0], dims[1]) == 1, "Invalid format for input: coefficients must be input as a vector");
     double *vi = mxGetPr(coeffs_mex);
     mwIndex set_length = std::max(dims[0],dims[1]);
+    mxAssert(set_length >= 1, "there must be at least one coefficient");
     std::vector<double> coeffs;
     for (mwIndex ind=0; ind < set_length; ind++){
         mxAssert(vi[ind] >= 0, "coefficients must be nonnegative");
