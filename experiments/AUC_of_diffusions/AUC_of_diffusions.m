@@ -3,6 +3,8 @@ function AUC_of_diffusions( varargin )
 %i
 % p.addOptional('fname','netscience-cc');
 
+clf;
+
 p = inputParser;
 p.addOptional('fname','senate');
 p.parse(varargin{:});
