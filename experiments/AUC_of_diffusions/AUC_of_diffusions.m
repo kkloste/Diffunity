@@ -95,7 +95,7 @@ fprintf('Done computing, now to print.\n');
 
 	title( sprintf( 'Graph: %s, community: %d', fname, which_comm ) );
 	xlabel('Number of walk terms');
-	legend('walk',  'ppr','hk', 'location','Southeast');
+	legend('walk', 'push-walk', 'ppr','hk', 'location','Southeast');
 
 	set_figure_size( [3,3] );
 	print(gcf,[ image_dir, 'diff-AUC-', fname, '-', num2str(which_comm), '.png'],'-dpng');
