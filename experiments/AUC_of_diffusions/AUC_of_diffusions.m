@@ -81,7 +81,7 @@ fprintf('Done computing, now to print.\n');
 	ylim([0,1]);
 	xlim([1,30]);
 
-	title( sprintf( 'diffusion AUCS, %s, seed %d', fname, num2str(which_comm) ) );
+	title( sprintf( 'Graph: %s, community: %d', fname, which_comm ) );
 	xlabel('Number of walk terms');
 	legend('walk',  'ppr','hk', 'location','Southeast');
 
