@@ -7,6 +7,10 @@
 	* the `reg_power_mex` version is causing misleading results in the AUC plots because repowermex doesn't round entries to zero the way gendiff does
 * Improve the AUC experiment by running it from *every* seed in the community, then plotting a curve with 20th percentile lines?
 * Experiment to reveal how many terms of random walk are most useful for getting best conductance?
+* write test functions for `gendiff`, `gendiff_mex1`
+* make sure codes are documented
+* designed better "theoretical bound" vs "actual conductance" experiments
+* run experiments on more datasets
 
 ## `/diffusion_codes`
 
