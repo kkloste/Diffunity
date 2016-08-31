@@ -4,8 +4,9 @@
 
 * Implement the Andersen Lang truncated lazy random walk algorithm.
 * write special version of `gendiff_mex` designed specifically to compute P^k*s .
-
-
+	* the `reg_power_mex` version is causing misleading results in the AUC plots because repowermex doesn't round entries to zero the way gendiff does
+* Improve the AUC experiment by running it from *every* seed in the community, then plotting a curve with 20th percentile lines?
+* Experiment to reveal how many terms of random walk are most useful for getting best conductance?
 
 ## `/diffusion_codes`
 

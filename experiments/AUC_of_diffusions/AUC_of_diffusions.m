@@ -35,17 +35,28 @@ alpha = 0.99;
 hk_t =5;
 accuracy = target_eps;
 debugflag = false;
-AUCs = zeros(30,3);
+NUM_ALGS = 4;
+AUCs = zeros(30,NUM_ALGS);
 
 fprintf( 'Inputs and parameters set, about to start computation\n');
 
 for N_terms=1:30,
 	which_alg = 0;
-	% RANDOM WALK
+	% FULL RANDOM WALK
 	which_alg = which_alg+1;
 	vec = reg_power_mex(A,eyej, N_terms);
 	[X,Y,T,AUC] = perfcurve(labels,vec,1);
 	AUCs(N_terms, which_alg) = AUC;
+
+	% FULL RANDOM WALK
+	which_alg = which_alg+1;
+	coefficients = zeros(N_terms+1,1);
+	coefficients(end) = 1;
+	[vec, bestset] = gendiff_mex1(A, seed_set, coefficients, accuracy, debugflag);
+	vec = full(vec);
+	[X,Y,T,AUC] = perfcurve(labels,vec,1);	
+	AUCs(N_terms, which_alg) = AUC;
+
 
 % [bestset,cond,cut,vol,prvec] = pprgrow_mex(A,j,targetvol,alpha)
 % [bestset,cond,cut,vol,y,npushes] = hkgrow_mex(A,set,t,eps,debugflag)
@@ -73,10 +84,11 @@ end
 
 fprintf('Done computing, now to print.\n');
 
-	plot( AUCs(:, 1), '-k' );
+	plot( AUCs(:, 1), '-k' ); %full walk
 	hold all;
-	plot( AUCs(:, 2), '-b' );
-	plot( AUCs(:, 3), '-r'  );
+	plot( AUCs(:, 2), ':k' ); % push walk
+	plot( AUCs(:, 3), '-b' ); % PR
+	plot( AUCs(:, 4), '-r'  ); %HK
 
 	ylim([0,1]);
 	xlim([1,30]);
