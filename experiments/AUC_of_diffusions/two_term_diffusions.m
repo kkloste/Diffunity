@@ -69,7 +69,7 @@ for which_point=1:NUM_POINTS,
   coeffs(1) = mesh_points(which_point);
   coeffs(2) = 1 - coeffs(1);
   diffusion_coeffs(which_point, :) = coeffs';
-  diff_vec = Krylov_matrix*coeffs;
+  diff_vec = Krylov_matrix*sparse(coeffs);
 
   fprintf('Is diff_vec sparse = %d \n', issparse(diff_vec) );
 
