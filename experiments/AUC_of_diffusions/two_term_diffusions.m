@@ -30,27 +30,30 @@ seed_vec = sparse(vert,1,1,n,1);
 
 
 % [1]  Setup parameters, variables
-%
-mesh_points = 20;
+
 NUM_TERMS = 2;
-
+NUM_POINTS = 20;
+mesh_points = linspace(0,1,NUM_POINTS);
 coeffs = zeros(NUM_TERMS, 1);
-NUM_POINTS = size(mesh_grid, 1);
-
 
 % [2]  Get partial Krylov matrix
 %
 [rows, cols, vals] = find(seed_vec);
 temp_vec = sparse_degpower_mex(A,seed_vec,-1);
+temp_vec = sparse( temp_vec(:,1), 1, temp_vec(:,2), n, 1);
 for which_term = 1:(NUM_TERMS-1),
   temp_vec = A*temp_vec;
   temp_vec = sparse_degpower_mex(A,temp_vec,-1);
+  temp_vec = sparse( temp_vec(:,1), 1, temp_vec(:,2), n, 1);
   [rowst,colst,valst] = find(temp_vec);
   rows = [rows; rowst];
   cols = [cols; (which_term+1)*ones(size(rowst))];
   vals = [vals; valst];
 end
 Krylov_matrix = sparse( rows, cols, vals, n, NUM_TERMS);
+
+
+fprintf('About to begin computing.\n');
 
 % tracking stats:
 % (full vs push) x (coord setting) x (AUC, cond, set size)
@@ -59,25 +62,41 @@ diffusion_stats = zeros(2,NUM_POINTS,2,3);
 diffusion_coeffs = zeros(NUM_POINTS,2);
 % [3]  Perform computations
 %
+dflag = true;
+dflag2 = 1;
 for which_point=1:NUM_POINTS,
-  coeffs(1) = mesh_grid(which_point);
+  coeffs(1) = mesh_points(which_point);
   coeffs(2) = 1 - coeffs(1);
   diffusion_coeffs(which_point, :) = coeffs';
   diff_vec = Krylov_matrix*coeffs;
 
+
+
+  fprintf('Size of diff_vec = %d %d \n', size(diff_vec,1), size(diff_vec,2) );
+
   % which_diff = full diffusion
   which_diff = 1;
   deg_scale = 1;
-  [bestset,cond] = sweepcut(A,diff_vec,'halfvol',true);
+  [bestset,cond] = sweepcut(A,diff_vec,'halfvol',true, 'debugflag', dflag);
   [X,Y,T,AUC] = perfcurve(labels,diff_vec,1);
   diffusion_stats(which_diff, which_point, deg_scale, :) = [cond, AUC, numel(bestset)];
+
+
+  fprintf('Done point %d  diff %d  deg %d \n', which_point, which_diff, deg_scale);
+
+  fprintf('Size of diff_vec = %d %d \n', size(diff_vec,1), size(diff_vec,2) );
+
+  fprintf('Is diff_vec sparse = %d \n', issparse(diff_vec) );
 
   deg_scale = 2;
-  diff_vec = sparse_degpower_mex(A,diff_vec,-1);
-  [bestset,cond] = sweepcut(A,diff_vec,'halfvol',true);
+  diff_vec = sparse_degpower_mex(A,diff_vec,-1.0, dflag2);
+  diff_vec = sparse( diff_vec(:,1), 1, diff_vec(:,2), n, 1);
+  [bestset,cond] = sweepcut(A,diff_vec,'halfvol',true, 'debugflag', dflag);
   [X,Y,T,AUC] = perfcurve(labels,diff_vec,1);
   diffusion_stats(which_diff, which_point, deg_scale, :) = [cond, AUC, numel(bestset)];
 
+
+  fprintf('Done point %d  diff %d \n', which_point, which_diff);
 
   [diff_vec,bestset,~,~,~,npushes] = gendiff_mex1(A,vert,coeffs,1e-3);
 
@@ -90,6 +109,7 @@ for which_point=1:NUM_POINTS,
 
   deg_scale = 1;
   diff_vec = sparse_degpower_mex(A,diff_vec,1);
+  diff_vec = sparse( diff_vec(:,1), 1, diff_vec(:,2), n, 1);
   [bestset,cond] = sweepcut(A,diff_vec,'halfvol',true);
   [X,Y,T,AUC] = perfcurve(labels,diff_vec,1);
   diffusion_stats(which_diff, which_point, deg_scale, :) = [cond, AUC, numel(bestset)];
