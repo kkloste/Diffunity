@@ -1,9 +1,14 @@
 /**
  * @file sweepcut_mex.cpp
  *
+ * Implements a sweepcut procedure that sweeps over nodes acccording to
+ * the ordering input in `node_ordering`. Options for terminating the sweep once
+ * the set reaches half the volume of A, as well as for starting and stopping
+ * the sweep at specified indices `sweepstart` and `sweepend`.
  *
  * USAGE:
- * [bestset,conductance,cut,volume] = sweepcut_mex(A,node_array)
+ * [bestset,conductance,cut,volume] = \
+ *        sweepcut_mex(A,node_ordering,halfvol_flag,sweepstart, sweepend, debugflag)
  *
  *
  * TO COMPILE:
@@ -14,22 +19,26 @@
  * mex -O CXXFLAGS="\$CXXFLAGS -std=c++0x" -largeArrayDims sweepcut_mex.cpp
  *
  *
+ *  Kyle Kloster, 2016
  */
 
 #ifndef __APPLE__
 #define __STDC_UTF_16__ 1
 #endif
 
-#include "sparsehash/dense_hash_map.h"
 #include <vector>
 #include <assert.h>
 #include <math.h>
 
-#include "sparsevec.hpp"
-//#include <unordered_set>
-//#include <unordered_map>
+//#include "sparsehash/dense_hash_map.h"
+//#include "sparsevec.hpp"
+#include <unordered_map>
 #define tr1ns std
 
+struct sparsevec {
+    typedef tr1ns::unordered_map<size_t,double> map_type;
+    map_type map;
+};
 
 
 #include "mex.h"
@@ -45,7 +54,7 @@ struct sparserow {
     mwIndex *ai;
     mwIndex *aj;
     double *a;
-    
+
     /**
      * Returns the degree of node u in sparse graph s
      */
@@ -65,17 +74,17 @@ double get_cond( double cut, double vol, double tot_vol ){
  *
  * @param G - sparserow version of input matrix A
  */
-
-void sweepcut(sparserow* G, std::vector<mwIndex>& noderank, mwIndex& bindex,
-	double& bcond, double& bvol, double& bcut, int halfvol)
+void sweepcut(sparserow* G, std::vector<mwIndex>& noderank, mwIndex& sw_start,
+  mwIndex& sw_end, mwIndex& bindex, double& bcond, double& bvol, double& bcut, int halfvol)
 {
-	mwIndex length_array = noderank.size();
+	// mwIndex length_array = noderank.size();
 	double total_volume = (double)G->aj[G->n] ;
-    sparsevec local_cut_G;
+  sparsevec local_cut_G;
 	double  curcond = 0.0, curvol = 0.0, curcut = 0.0;
 	bcond = 2.0;
 
-	for ( mwIndex counter = 0, curindex = 0; counter < length_array; counter++, curindex++ ){
+	//for ( mwIndex counter = 0, curindex = 0; counter < length_array; counter++, curindex++ ){
+  for ( mwIndex counter = 0, curindex = 0; counter <= sw_end; counter++, curindex++ ){
 		mwIndex curinterior = 0;
 		mwIndex curnode = noderank[curindex];
 		// move next neighbor into the local cut graph
@@ -90,15 +99,15 @@ void sweepcut(sparserow* G, std::vector<mwIndex>& noderank, mwIndex& bindex,
 		curvol += (double) G->sr_degree(curnode);
 		curcut += (double) ( G->sr_degree(curnode) - (double)2*curinterior );
 		curcond = get_cond( curcut, curvol, total_volume);
-//DEBUGPRINT(("sweepcut_mex: cond %f , cut %f , vol %f , total_volume %f  ,  curinterior %d , degree %d  \n", curcond, curcut, curvol, total_volume, curinterior, G->sr_degree(curnode) ));
 		if ( (halfvol == 1) && (curvol >= total_volume/2.0) ){ break; }
-		if (curcond < bcond) {
-			bcond = curcond;
-			bcut = curcut;
-			bvol = curvol;
-			bindex = curindex;
-		}
+    if ((curcond < bcond) && (curindex >= sw_start)) {
+      bcond = curcond;
+      bcut = curcut;
+      bvol = curvol;
+      bindex = curindex;
+    }
 	}
+
 }
 
 void copy_array_to_index_vector(const mxArray* v, std::vector<mwIndex>& vec)
@@ -106,9 +115,9 @@ void copy_array_to_index_vector(const mxArray* v, std::vector<mwIndex>& vec)
     mxAssert(mxIsDouble(v), "array type is not double");
     size_t n = mxGetNumberOfElements(v);
     double *p = mxGetPr(v);
-    
+
     vec.resize(n);
-    
+
 	sparsevec double_counter; // make sure we don't put any node in the array more than once.
 
     for (size_t i=0; i<n; ++i) {
@@ -125,23 +134,23 @@ void copy_array_to_index_vector(const mxArray* v, std::vector<mwIndex>& vec)
 
 
 // USAGE
-// [bindex,bcond,bcut,bvol] = sweepcut_mex(A,noderank,halfvol,debugflag)
+// [bindex,bcond,bcut,bvol] = sweepcut_mex(A,noderank,halfvol,sweepstart, sweepend, debugflag)
 void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 {
     // arguments/outputs error-checking
-    if ( nrhs > 4 || nrhs < 2 ) {
+    if ( nrhs > 6 || nrhs < 2 ) {
         mexErrMsgIdAndTxt("sweepcut_mex:wrongNumberArguments",
-                          "sweepcut_mex needs two to three arguments, not %i", nrhs);
+                          "sweepcut_mex needs two to six arguments, not %i", nrhs);
     }
-    if (nrhs == 4) {
-        debugflag = (int)mxGetScalar(prhs[3]);
+    if (nrhs == 6) {
+        debugflag = (int)mxGetScalar(prhs[5]);
     }
     DEBUGPRINT(("sweepcut_mex: preprocessing start: \n"));
     if ( nlhs > 4 ){
         mexErrMsgIdAndTxt("sweepcut_mex:wrongNumberOutputs",
                           "sweepcut_mex needs 0 to 4 outputs, not %i", nlhs);
     }
-    
+
     // Retrieve Sparse Matrix input
     const mxArray* mat = prhs[0];
     if ( mxIsSparse(mat) == false ){
@@ -159,18 +168,25 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
     r.ai = mxGetIr(mat);
     r.a = mxGetPr(mat);
 
-	    
+
 
     // Retrieve ordered node array
     const mxArray* set = prhs[1];
     std::vector< mwIndex > node_array;
     copy_array_to_index_vector( set, node_array );
-    
+
 	// Retrieve "half volume" flag
 	int halfvol = 0;
-	if (nrhs >= 3){
-        halfvol = (int) mxGetScalar(prhs[2]);
-	}
+  mwIndex sweep_start = 0;
+  mwIndex sweep_end = node_array.size()-1;
+	if (nrhs >= 3){ halfvol = (int) mxGetScalar(prhs[2]); }
+  if (nrhs >= 4) { sweep_start = (mwIndex)mxGetScalar(prhs[3]) - 1; } // shift from matlab indices
+  if (nrhs >= 5) { sweep_end = (mwIndex)mxGetScalar(prhs[4]) - 1; }
+
+  if ( sweep_start > sweep_end ){
+      mexErrMsgIdAndTxt("sweepcut_mex:incompatibleIndexRange",
+                        "sweepcut_mex needs sweep start index <= sweep end index");
+  }
 
 // INPUTS DECODED
 // now perform sweep procedure
@@ -189,12 +205,12 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
     // input/outputs prepared!
     DEBUGPRINT(("sweepcut_mex: preprocessing end: \n"));
-    
+
     // execute actual code
-    sweepcut(&r, node_array, break_index, conductance, volume, cut, halfvol);
-    
+    sweepcut(&r, node_array, sweep_start, sweep_end, break_index, conductance, volume, cut, halfvol);
+
     DEBUGPRINT(("sweepcut_mex: call to sweepcut() done\n"));
-    
+
 	double* dummy = NULL;
 	dummy = mxGetPr( conductanceMX ); *dummy = conductance;
 	dummy = mxGetPr( break_indexMX ); *dummy = (double) break_index + 1.0 ; // shifting to matlab indexing

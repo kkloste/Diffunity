@@ -47,7 +47,7 @@ struct sparserow {
     mwIndex *ai;
     mwIndex *aj;
     double *a;
-    
+
     /**
      * Returns the degree of node u in sparse graph s
      */
@@ -108,7 +108,7 @@ int seeded_diffusion(sparserow * G, sparsevec& set, sparsevec& y, const double e
     }
 */
     DEBUGPRINT(("seeded_diffusion: n=%i N=%i \n", n, N));
-    
+
     // initialize the thresholds for pushing
     std::vector<double> psis(N,0.0);
     psis[0] = 1.0;
@@ -119,7 +119,7 @@ int seeded_diffusion(sparserow * G, sparsevec& set, sparsevec& y, const double e
 
 
     DEBUGPRINT(("seeded_diffusion: computed psis \n"));
-    
+
 
     // check eps and coeffs
     mxAssert(psis[N] <= eps, "coefficients input do not meet accuracy input");
@@ -127,20 +127,20 @@ int seeded_diffusion(sparserow * G, sparsevec& set, sparsevec& y, const double e
     for (mwIndex k = 0; k < N ; k++){
         pushcoeff[k] = eps/(psis[k]*(double)N);
     }
-   
+
 
     DEBUGPRINT(("seeded_diffusion: computed pushcoeffs \n"));
-    
+
 
     mwIndex ri = 0;
     mwIndex npush = 0;
     double rij = 0;
     // allocate data
     sparsevec rvec;
-    
+
     // i is the node index, j is the "step"
     #define rentry(i,j) ((i)+(j)*n)
-    
+
     // set the initial residual, add to the queue
     for (sparsevec::map_type::iterator it=set.map.begin(),itend=set.map.end();
          it!=itend;++it) {
@@ -149,10 +149,10 @@ int seeded_diffusion(sparserow * G, sparsevec& set, sparsevec& y, const double e
         rvec.map[rentry(ri,0)]+=rij;
         Q.push(rentry(ri,0));
     }
-    
+
 
     DEBUGPRINT(("seeded_diffusion: set initial residual, size = %d \n", Q.size() ));
-    
+
 
     while (npush < max_push_count) {
         // STEP 1: pop top element off of heap
@@ -161,7 +161,7 @@ int seeded_diffusion(sparserow * G, sparsevec& set, sparsevec& y, const double e
         // decode incides i,j
         mwIndex i = ri%n;
         mwIndex j = ri/n;
-        
+
         double degofi = (double)G->sr_degree(i);
         rij = rvec.map[ri];
         // update yi
@@ -169,7 +169,7 @@ int seeded_diffusion(sparserow * G, sparsevec& set, sparsevec& y, const double e
         // update r, no need to update heap here
         rvec.map[ri] = 0;
         double update = rij/degofi;
-        
+
         if (j == N-1) {
             // this is the terminal case, and so we add the column of A
             // directly to the solution vector y
@@ -218,12 +218,12 @@ void cluster_from_sweep(sparserow* G, sparsevec& p,
     typedef std::vector< std::pair<int, double> > vertex_prob_type;
     vertex_prob_type prpairs(p.map.begin(), p.map.end());
     std::sort(prpairs.begin(), prpairs.end(), greater2nd());
-    
+
     // compute cutsize, volume, and conductance
     std::vector<double> conductance(prpairs.size());
     std::vector<mwIndex> volume(prpairs.size());
     std::vector<mwIndex> cutsize(prpairs.size());
-    
+
     size_t i=0;
     // tr1ns::unordered_map<int,size_t> rank;
     google::dense_hash_map<int,size_t> rank;
@@ -235,10 +235,10 @@ void cluster_from_sweep(sparserow* G, sparsevec& p,
         rank[it->first] = i;
     }
     //printf("support=%i\n",prpairs.size());
- 
+
 
     DEBUGPRINT(("cluster_from_sweep: data structures prepped, prpairs.size() = %d \n", prpairs.size() ));
-    
+
     mwIndex total_degree = G->ai[G->m];
     mwIndex curcutsize = 0;
     mwIndex curvolume = 0;
@@ -325,7 +325,7 @@ int hypercluster_gendiff_multiple(sparserow* G, const std::vector<mwIndex>& set,
     r.map.clear();
     q.empty();
     DEBUGPRINT(("beginning of hypercluster \n"));
-    
+
     size_t maxdeg = 0;
     for (size_t i=0; i<set.size(); ++i) { //populate r with indices of "set"
         assert(set[i] >= 0); assert(set[i] < G->n); // assert that "set" contains indices i: 1<=i<=n
@@ -334,10 +334,10 @@ int hypercluster_gendiff_multiple(sparserow* G, const std::vector<mwIndex>& set,
         //    DEBUGPRINT(("i = %i \t set[i] = %i \t setideg = %i \n", i, set[i], setideg));
         maxdeg = std::max(maxdeg, setideg);
     }
-    
+
     DEBUGPRINT(("at last, seeded_diffusion: eps=%f \n", eps));
-    
-    int nsteps = seeded_diffusion(G, r, p, eps, coeffs, ceil(pow(G->n,1.5)), q);
+
+    int nsteps = seeded_diffusion(G, r, p, eps, coeffs, ceil(pow(G->n,2)), q);
     /**
      *      **********
      *        ***       seeded_diffusion       is called         ***
@@ -346,7 +346,7 @@ int hypercluster_gendiff_multiple(sparserow* G, const std::vector<mwIndex>& set,
 
 
     DEBUGPRINT(("seeded_diffusion: CALL DONE \n" ));
-    
+
 
     if (nsteps == 0) {
         p = r; // just copy over the residual
@@ -354,16 +354,16 @@ int hypercluster_gendiff_multiple(sparserow* G, const std::vector<mwIndex>& set,
     int support = r.map.size();
     if (stats) { stats->steps = nsteps; }
     if (stats) { stats->support = support; }
-    
+
     // divide the probablities by their degree
     for (sparsevec::map_type::iterator it=p.map.begin(),itend=p.map.end();
          it!=itend;++it) {
         it->second *= (1.0/(double)std::max(G->sr_degree(it->first),(mwIndex)1));
     }
-   
+
 
     DEBUGPRINT(("hypercluster_gendiff_multiple:  prepping to call cluster_from_sweep()  \n" ));
-    
+
 
     double *outcond = NULL;
     double *outvolume = NULL;
@@ -410,9 +410,9 @@ void copy_array_to_index_vector(const mxArray* v, std::vector<mwIndex>& vec)
     mxAssert(mxIsDouble(v), "array type is not double");
     size_t n = mxGetNumberOfElements(v);
     double *p = mxGetPr(v);
-    
+
     vec.resize(n);
-    
+
     for (size_t i=0; i<n; ++i) {
         double elem = p[i];
         mxAssert(elem >= 1, "Only positive integer elements allowed");
@@ -438,7 +438,7 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
         mexErrMsgIdAndTxt("gendiff_mex:wrongNumberOutputs",
                           "gendiff_mex needs 0 to 6 outputs, not %i", nlhs);
     }
-    
+
     // Retrieve Sparse Matrix input
     const mxArray* mat = prhs[0];
     if ( mxIsSparse(mat) == false ){
@@ -455,12 +455,12 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
     r.ai = mxGetJc(mat);
     r.aj = mxGetIr(mat);
     r.a = mxGetPr(mat);
-    
+
     // Retrieve seed set input
     const mxArray* set = prhs[1];
     std::vector< mwIndex > seeds;
     copy_array_to_index_vector( set, seeds );
-    
+
     // Prepare Coefficients
     const mxArray* coeffs_mex = prhs[2];
     mwSize ndim = mxGetNumberOfDimensions(coeffs_mex);
@@ -485,24 +485,24 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
     mxArray* cut = mxCreateDoubleMatrix(1,1,mxREAL);
     mxArray* vol = mxCreateDoubleMatrix(1,1,mxREAL);
     mxArray* npushes = mxCreateDoubleMatrix(1,1,mxREAL);
-    
+
     if (nlhs > 1) { plhs[1] = cond; }
     if (nlhs > 2) { plhs[2] = cut; }
     if (nlhs > 3) { plhs[3] = vol; }
     if (nlhs > 5) { plhs[5] = npushes; }
     // input/outputs prepared!
     DEBUGPRINT(("gendiff_mex: preprocessing end: \n"));
-    
+
     // execute actual code
     sparsevec diffvec;
     diffgrow(&r, seeds, eps, diffvec, coeffs, mxGetPr(cond), mxGetPr(cut), mxGetPr(vol), mxGetPr(npushes));
-    
+
     DEBUGPRINT(("gendiff_mex: call to diffgrow() done\n"));
-    
+
     if (nlhs > 0) { // sets output "bestset" to the set of best conductance
         mxArray* cassign = mxCreateDoubleMatrix(seeds.size(),1,mxREAL);
         plhs[0] = cassign;
-        
+
         double *ci = mxGetPr(cassign);
         for (size_t i=0; i<seeds.size(); ++i) {
             ci[i] = (double)(seeds[i] + 1);

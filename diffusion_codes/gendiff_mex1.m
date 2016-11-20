@@ -1,17 +1,17 @@
-function [diffusion,bestset,conductance,cut,volume,num_pushes] = gendiff_mex1(A,seed_set,coefficients,accuracy,varargin)
+function [diffusion,bestset,conductance,cut,volume,num_pushes] = gendiff_mex1(A,seed_set,coefficients,varargin)
 % GENDIFF_MEX1 outputs cluster and diffusion vector computed from 'coefficients' at vert
 %
-% [diff_vec,bestset,cond,cut,vol,npushes] = gendiff_mex1(A,seed_set,coefficients,accuracy,varargin)
+% [diffusion,bestset,conductance,cut,volume,num_pushes] = gendiff_mex1(A,seed_set,coefficients,varargin)
 %
 % Computes q(P)*v where
 % v is a sparse, nonnegative seed vector, input as "vert",
 % and q(x) is some polynomial whose coefficients are input as "coeffs".
-% "coeffs" should be nonnegative and have sum S satisfying  (1-accuracy) < S <= 1
+% "coeffs" should be nonnegative and have sum S > 0
 %
 % ... gendiff_grow(A,verts,'key',value,'key',value) specifies optional argument
 %
-%
-%    'debug' : [false | true] to enable debugging info. The default is
+%    'acccuracy' : > 0, degree-normalized infinity norm error. Default is 1e-4.
+%    'debug' 		 : [false | true] to enable debugging info. The default is
 %    false.
 %
 %
@@ -21,12 +21,12 @@ function [diffusion,bestset,conductance,cut,volume,num_pushes] = gendiff_mex1(A,
 
 p = inputParser;
 p.addOptional('debug',false,@islogical);
+p.addOptional('accuracy',1e-4,@isscalar);
 p.parse(varargin{:});
 
 debugflag = p.Results.debug;
-
-% assert( (1.0 - accuracy <= sum(coefficients)), sprintf('Input error: accuracy and coefficients must satisfy (1 - accuracy <= sum(coefficients) ), sum = %f; 1-accuracy = %f ',sum(coefficients), 1-accuracy  ) );
-% assert( (sum(coefficients) <= 1) , sprintf('Input error: coefficients must satisfy sum(coefficients) <= 1,  sum = %f ', sum(coefficients))  );
+accuracy = p.Results.accuracy;
+assert( accuracy > 0 ), sprintf('Input error: accuracy must satisfy accuracy > 0;  accuracy = %f ', accuracy ) );
 for j=1:length(coefficients),
 	assert(   coefficients(j) >= 0 , 'Input error: coefficients must satisfy coefficients[j] >= 0 ' );
 end
