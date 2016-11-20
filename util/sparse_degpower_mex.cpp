@@ -89,8 +89,11 @@ void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
     DEBUGPRINT(("\n            parameters obtained"));
 
     // Decode input "vector"
-    mxAssert( mxIsSparse(set) == true , "Invalid format for input: must be sparse vector");
-
+    if ( mxIsSparse(set) != true ){
+        mexErrMsgIdAndTxt("sparse_degpower_mex:wrongInputVectorFormat",
+                          "sparse_degpower_mex needs sparse vector input");
+    }
+    
     sparserow v;
     v.m = mxGetM(set);
     v.n = mxGetN(set);

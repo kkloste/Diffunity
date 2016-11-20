@@ -52,6 +52,7 @@ for which_term = 1:(NUM_TERMS-1),
 end
 Krylov_matrix = sparse( rows, cols, vals, n, NUM_TERMS);
 
+fprintf('Is Krylov_matrix sparse = %d \n', issparse(Krylov_matrix) );
 
 fprintf('About to begin computing.\n');
 
@@ -70,7 +71,7 @@ for which_point=1:NUM_POINTS,
   diffusion_coeffs(which_point, :) = coeffs';
   diff_vec = Krylov_matrix*coeffs;
 
-
+  fprintf('Is diff_vec sparse = %d \n', issparse(diff_vec) );
 
   fprintf('Size of diff_vec = %d %d \n', size(diff_vec,1), size(diff_vec,2) );
 
