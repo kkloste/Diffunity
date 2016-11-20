@@ -26,7 +26,7 @@ p.parse(varargin{:});
 
 debugflag = p.Results.debug;
 accuracy = p.Results.accuracy;
-assert( accuracy > 0 ), sprintf('Input error: accuracy must satisfy accuracy > 0;  accuracy = %f ', accuracy ) );
+assert( accuracy > 0 , sprintf('Input error: accuracy must satisfy accuracy > 0;  accuracy = %f ', accuracy ) );
 for j=1:length(coefficients),
 	assert(   coefficients(j) >= 0 , 'Input error: coefficients must satisfy coefficients[j] >= 0 ' );
 end
