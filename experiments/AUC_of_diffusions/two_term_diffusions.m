@@ -63,17 +63,13 @@ diffusion_stats = zeros(2,NUM_POINTS,2,3);
 diffusion_coeffs = zeros(NUM_POINTS,2);
 % [3]  Perform computations
 %
-dflag = true;
-dflag2 = 1;
+dflag = false;
+dflag2 = 0;
 for which_point=1:NUM_POINTS,
   coeffs(1) = mesh_points(which_point);
   coeffs(2) = 1 - coeffs(1);
   diffusion_coeffs(which_point, :) = coeffs';
   diff_vec = Krylov_matrix*sparse(coeffs);
-
-  fprintf('Is diff_vec sparse = %d \n', issparse(diff_vec) );
-
-  fprintf('Size of diff_vec = %d %d \n', size(diff_vec,1), size(diff_vec,2) );
 
   % which_diff = full diffusion
   which_diff = 1;
@@ -81,13 +77,6 @@ for which_point=1:NUM_POINTS,
   [bestset,cond] = sweepcut(A,diff_vec,'halfvol',true, 'debugflag', dflag);
   [X,Y,T,AUC] = perfcurve(labels,diff_vec,1);
   diffusion_stats(which_diff, which_point, deg_scale, :) = [cond, AUC, numel(bestset)];
-
-
-  fprintf('Done point %d  diff %d  deg %d \n', which_point, which_diff, deg_scale);
-
-  fprintf('Size of diff_vec = %d %d \n', size(diff_vec,1), size(diff_vec,2) );
-
-  fprintf('Is diff_vec sparse = %d \n', issparse(diff_vec) );
 
   deg_scale = 2;
   diff_vec = sparse_degpower_mex(A,diff_vec,-1.0, dflag2);
@@ -97,9 +86,7 @@ for which_point=1:NUM_POINTS,
   diffusion_stats(which_diff, which_point, deg_scale, :) = [cond, AUC, numel(bestset)];
 
 
-  fprintf('Done point %d  diff %d \n', which_point, which_diff);
-
-  [diff_vec,bestset,~,~,~,npushes] = gendiff_mex1(A,vert,coeffs,1e-3);
+  [diff_vec,bestset,~,~,~,npushes] = gendiff_mex1(A,vert,coeffs,'accuracy',1e-3);
 
   % which_diff = push diffusion
   which_diff = 2;
@@ -116,10 +103,11 @@ for which_point=1:NUM_POINTS,
   diffusion_stats(which_diff, which_point, deg_scale, :) = [cond, AUC, numel(bestset)];
 end
 
-save( [save_dir, fname, '-two_term_diff.mat'], 'diffusions_stats','diffusion_coeffs','which_comm','vert','-v7.3');
+save( [save_dir, fname, '-two_term_diff.mat'], 'diffusion_stats','diffusion_coeffs','which_comm','vert','-v7.3');
 
 fprintf('Done computing, now to print.\n');
 
+  stat_string = { 'cond', 'AUC' };
   Xs = diffusion_coeffs(:,1);
   linstyles = { '-', ':' };
   colors = [ 1, 0.5, 0.5; 0, 0, 1 ];
@@ -127,7 +115,7 @@ fprintf('Done computing, now to print.\n');
     clf
     for which_diff = 1:2,
       for deg_scale = 1:2,
-          Ys = squeeze(diffusions_stats(which_diff, :, deg_scale, which_stat));
+          Ys = squeeze(diffusion_stats(which_diff, :, deg_scale, which_stat))';
         	plot( [Xs,Ys], 'Color', colors(which_diff,:), 'LineStyle', linstyles{deg_scale} );
         	hold all;
       end
