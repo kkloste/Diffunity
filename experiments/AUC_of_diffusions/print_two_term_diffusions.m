@@ -24,7 +24,8 @@ load( [save_dir, fname, '-', num2str(which_comm), '-', num2str(vert), '-two_term
     for which_diff = 1:2,
       for deg_scale = 1:2,
           Ys = squeeze(diffusion_stats(which_diff, :, deg_scale, which_stat))';
-        	plot( [Xs,Ys], 'Color', colors(which_diff,:), 'LineStyle', linstyles{deg_scale} );
+        	plot( Xs,Ys, 'Color', colors(which_diff,:), 'LineStyle', linstyles{deg_scale} );
+          %plot( Xs,Ys );
         	hold all;
       end
     end
