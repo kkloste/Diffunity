@@ -49,7 +49,7 @@ for which_term = 1:(NUM_TERMS),
   temp_vec = sparse( temp_vec(:,1), 1, temp_vec(:,2), n, 1);
   [rowst,colst,valst] = find(temp_vec);
   rows = [rows; rowst];
-  cols = [cols; (which_term+1)*ones(size(rowst))];
+  cols = [cols; (which_term)*ones(size(rowst))];
   vals = [vals; valst];
 end
 Krylov_matrix = sparse( rows, cols, vals, n, NUM_TERMS);
