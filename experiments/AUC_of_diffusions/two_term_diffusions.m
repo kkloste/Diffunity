@@ -49,7 +49,7 @@ for which_term = 1:(NUM_TERMS),
   cols = [cols; (which_term+1)*ones(size(rowst))];
   vals = [vals; valst];
 end
-Krylov_matrix = sparse( rows, cols, vals, n, NUM_TERMS);
+Krylov_matrix = sparse( rows, cols, vals, n, NUM_TERMS+1);
 
 fprintf('About to begin computing.\n');
 
@@ -66,7 +66,7 @@ coeffs(1) = COEFF_MAX;
 for which_point=1:NUM_POINTS,
   coeffs(2) = mesh_points(which_point);
   coeffs(3) = COEFF_MAX - coeffs(2);
-  diffusion_coeffs(which_point, :) = coeffs';
+  diffusion_coeffs(which_point, :) = coeffs(2:end)';
   diff_vec = Krylov_matrix*sparse(coeffs);
 
   % which_diff = full diffusion

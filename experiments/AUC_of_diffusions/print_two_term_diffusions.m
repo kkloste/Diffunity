@@ -30,7 +30,7 @@ load( [save_dir, fname, '-', num2str(which_comm), '-', num2str(vert), '-two_term
       end
     end
     ylim([0,1]);
-    xlim([0,1]);
+    xlim([0,max(Xs)]);
 
     title( sprintf( 'Graph: %s, community: %d , vert: %d', fname, which_comm, vert ) );
     xlabel('coeff 1');
