@@ -30,16 +30,20 @@ seed_vec = sparse(vert,1,1,n,1);
 % [1]  Setup parameters, variables
 
 NUM_TERMS = 2;
-NUM_POINTS = 20;
-mesh_points = linspace(0,1,NUM_POINTS);
+NUM_POINTS = 50;
+COEFF_MAX = 0.5;
+mesh_points = linspace(0,COEFF_MAX,NUM_POINTS);
 coeffs = zeros(NUM_TERMS, 1);
 
 % [2]  Get partial Krylov matrix
 %
-[rows, cols, vals] = find(seed_vec);
+% [rows, cols, vals] = find(seed_vec);
+rows = [];
+cols = [];
+vals = [];
 temp_vec = sparse_degpower_mex(A,seed_vec,-1);
 temp_vec = sparse( temp_vec(:,1), 1, temp_vec(:,2), n, 1);
-for which_term = 1:(NUM_TERMS-1),
+for which_term = 1:(NUM_TERMS),
   temp_vec = A*temp_vec;
   temp_vec = sparse_degpower_mex(A,temp_vec,-1);
   temp_vec = sparse( temp_vec(:,1), 1, temp_vec(:,2), n, 1);
@@ -49,8 +53,6 @@ for which_term = 1:(NUM_TERMS-1),
   vals = [vals; valst];
 end
 Krylov_matrix = sparse( rows, cols, vals, n, NUM_TERMS);
-
-fprintf('Is Krylov_matrix sparse = %d \n', issparse(Krylov_matrix) );
 
 fprintf('About to begin computing.\n');
 
@@ -65,9 +67,9 @@ dflag = false;
 dflag2 = 0;
 for which_point=1:NUM_POINTS,
   coeffs(1) = mesh_points(which_point);
-  coeffs(2) = 1 - coeffs(1);
+  coeffs(2) = COEFF_MAX - coeffs(1);
   diffusion_coeffs(which_point, :) = coeffs';
-  diff_vec = Krylov_matrix*sparse(coeffs);
+  diff_vec = 0.5*seed_vec + Krylov_matrix*sparse(coeffs);
 
   % which_diff = full diffusion
   which_diff = 1;
@@ -83,8 +85,8 @@ for which_point=1:NUM_POINTS,
   [X,Y,T,AUC] = perfcurve(labels,diff_vec,1);
   diffusion_stats(which_diff, which_point, deg_scale, :) = [cond, AUC, numel(bestset)];
 
-
-  [diff_vec,bestset,~,~,~,npushes] = gendiff_mex1(A,vert,coeffs,'accuracy',1e-3);
+  mod_coeffs = [COEFF_MAX; coeffs];
+  [diff_vec,bestset,~,~,~,npushes] = gendiff_mex1(A,vert,mod_coeffs,'accuracy',1e-3);
 
   % which_diff = push diffusion
   which_diff = 2;
